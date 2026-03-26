@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>에듀케레 분석지 EBS-4</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR',sans-serif;background:#f0f2f5;display:flex;height:100vh;overflow:hidden}
+
+/* SIDEBAR */
+#sidebar{width:220px;min-width:220px;background:#1a2744;color:#fff;display:flex;flex-direction:column;overflow-y:auto}
+.sidebar-title{padding:22px 18px 10px;font-family:'Playfair Display',serif;font-size:15px;color:#c8a84b;border-bottom:1px solid rgba(200,168,75,0.3);line-height:1.4}
+.sidebar-subtitle{font-size:10px;color:rgba(255,255,255,0.5);font-family:'Noto Sans KR',sans-serif;font-weight:300;margin-top:4px}
+.passage-btn{display:block;width:100%;text-align:left;padding:12px 18px;background:none;border:none;color:rgba(255,255,255,0.75);font-family:'Noto Sans KR',sans-serif;font-size:12px;cursor:pointer;border-left:3px solid transparent;transition:all 0.2s;line-height:1.4}
+.passage-btn:hover{background:rgba(200,168,75,0.1);color:#c8a84b}
+.passage-btn.active{background:rgba(200,168,75,0.15);color:#c8a84b;border-left-color:#c8a84b;font-weight:700}
+.passage-num{font-size:10px;color:rgba(255,255,255,0.4);display:block}
+.sidebar-footer{margin-top:auto;padding:14px 18px;font-size:10px;color:rgba(255,255,255,0.3);border-top:1px solid rgba(255,255,255,0.1)}
+
+/* MAIN */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.tab-bar{background:#1a2744;display:flex;overflow-x:auto;flex-shrink:0}
+.tab-bar::-webkit-scrollbar{height:3px}
+.tab-bar::-webkit-scrollbar-thumb{background:#c8a84b}
+.tab-btn{padding:12px 16px;background:none;border:none;color:rgba(255,255,255,0.6);font-family:'Noto Sans KR',sans-serif;font-size:12px;cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;transition:all 0.2s}
+.tab-btn:hover{color:#c8a84b}
+.tab-btn.active{color:#c8a84b;border-bottom-color:#c8a84b;font-weight:700}
+#content{flex:1;overflow-y:auto;padding:28px 32px;background:#f0f2f5}
+
+/* PASSAGE PANEL */
+.passage-panel{display:none}
+.passage-panel.active{display:block}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* SECTION TITLES */
+.section-title{font-family:'Playfair Display',serif;font-size:20px;color:#1a2744;margin-bottom:18px;padding-bottom:8px;border-bottom:2px solid #c8a84b}
+.section-subtitle{font-size:13px;color:#666;font-weight:400;font-family:'Noto Sans KR',sans-serif;margin-left:8px}
+
+/* FULL TEXT BOX */
+.full-text-box{background:#fff;border:2px solid #1a2744;border-radius:8px;padding:22px 26px;margin-bottom:8px}
+.full-text-box p{font-family:'EB Garamond',serif;font-size:17px;line-height:1.9;color:#1a2744}
+
+/* SENTENCE ANALYSIS */
+.sent-block{background:#fff;border-radius:8px;padding:18px 20px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.sent-num{font-family:'Playfair Display',serif;font-size:14px;color:#c8a84b;font-weight:700;margin-bottom:8px}
+.sent-en{font-family:'EB Garamond',serif;font-size:15px;color:#1a2744;line-height:1.7;padding:10px 14px;background:#f8f9fc;border-left:4px solid #1a2744;border-radius:0 6px 6px 0;margin-bottom:10px}
+.sent-slash{font-size:13px;color:#444;line-height:1.8;margin-bottom:4px}
+.sent-ko{font-size:12px;color:#666;line-height:1.8;margin-bottom:10px;padding-left:4px}
+.gram-item{background:#fffbf0;border-left:3px solid #c8a84b;padding:8px 12px;margin-bottom:6px;border-radius:0 4px 4px 0;font-size:12px}
+.gram-name{color:#7a5500;font-weight:700}
+.gram-ex{color:#555;margin-top:2px}
+.gram-tip{color:#1a2744;margin-top:2px;font-size:11px}
+
+/* VOCABULARY */
+.vocab-item{background:#fff;border-radius:6px;padding:12px 16px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,0.05);display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.vocab-word{font-family:'EB Garamond',serif;font-size:16px;color:#1a2744;font-weight:600;min-width:140px}
+.vocab-meaning{font-size:13px;color:#333;flex:1}
+.vocab-pos{font-size:11px;color:#888;font-style:italic;background:#f0f2f5;padding:2px 7px;border-radius:10px}
+.vocab-deriv{font-size:11px;color:#375623;background:#e8f5e9;padding:2px 7px;border-radius:10px}
+
+/* GRAMMAR */
+.gram-block{background:#fff;border-radius:8px;padding:18px 20px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.gram-block-num{color:#c8a84b;font-weight:700;font-size:14px;margin-bottom:6px}
+.gram-block-title{color:#1a2744;font-weight:700;font-size:14px;margin-bottom:8px}
+.gram-block-body{font-size:13px;color:#444;line-height:1.8}
+.gram-block-tip{font-size:12px;color:#1a2744;background:#e8eaf6;padding:6px 10px;border-radius:4px;margin-top:8px}
+
+/* TRANSLATION */
+.trans-box{background:#fff;border-radius:8px;padding:22px 26px;box-shadow:0 1px 4px rgba(0,0,0,0.06);font-size:14px;line-height:2.1;color:#333}
+
+/* TOPIC */
+.topic-box{background:#fff;border-radius:8px;padding:20px 24px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.topic-label{font-size:11px;font-weight:700;color:#c8a84b;letter-spacing:1px;margin-bottom:6px;text-transform:uppercase}
+.topic-content{font-size:14px;color:#1a2744;line-height:1.8}
+.structure-step{display:flex;gap:12px;margin-bottom:8px;align-items:flex-start}
+.step-badge{background:#1a2744;color:#c8a84b;font-size:11px;padding:3px 9px;border-radius:10px;white-space:nowrap;font-weight:700;flex-shrink:0;margin-top:2px}
+.step-text{font-size:13px;color:#444;line-height:1.7}
+
+/* QUIZ */
+.quiz-block{background:#fff;border-radius:8px;padding:20px 22px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.quiz-num{font-size:12px;font-weight:700;color:#c8a84b;margin-bottom:4px}
+.quiz-type{font-size:11px;color:#888;margin-bottom:10px}
+.quiz-question{font-size:14px;color:#1a2744;line-height:1.8;margin-bottom:14px}
+.quiz-passage{font-family:'EB Garamond',serif;font-size:14px;color:#333;line-height:1.8;background:#f8f9fc;border-left:4px solid #1a2744;padding:10px 14px;margin-bottom:14px;border-radius:0 6px 6px 0}
+.choice-btn{display:block;width:100%;text-align:left;padding:9px 14px;margin-bottom:6px;border:1.5px solid #e0e3ea;border-radius:6px;background:#fff;font-family:'Noto Sans KR',sans-serif;font-size:13px;color:#333;cursor:pointer;transition:all 0.15s}
+.choice-btn:hover{border-color:#c8a84b;background:#fffbf0}
+.choice-btn.correct{background:#e8f5e9;border-color:#4caf50;color:#2e7d32;font-weight:700}
+.choice-btn.wrong{background:#ffebee;border-color:#ef5350;color:#c62828}
+.choice-btn.reveal{background:#e8f5e9;border-color:#4caf50;color:#2e7d32}
+.choice-btn:disabled{cursor:default}
+.quiz-explain{font-size:12px;color:#1a2744;background:#e8eaf6;padding:8px 12px;border-radius:4px;margin-top:8px;display:none}
+.quiz-explain.show{display:block}
+.quiz-underline{text-decoration:underline;font-weight:600;cursor:pointer;padding:1px 4px;border-radius:3px;transition:all 0.15s}
+.quiz-underline:hover{background:#fffbf0}
+.quiz-underline.correct-ul{background:#e8f5e9;color:#2e7d32;text-decoration:none}
+.quiz-underline.wrong-ul{background:#ffebee;color:#c62828;text-decoration:none}
+.reset-btn{margin-top:10px;padding:7px 16px;background:#1a2744;color:#c8a84b;border:none;border-radius:5px;font-size:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif}
+.reset-btn:hover{background:#243460}
+
+/* 서술형 */
+.essay-block{background:#fff;border-radius:8px;padding:20px 22px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.essay-label{font-size:12px;font-weight:700;color:#1a2744;margin-bottom:6px}
+.essay-condition{font-size:12px;color:#888;margin-bottom:10px;font-style:italic}
+.essay-question{font-size:14px;color:#1a2744;line-height:1.9;margin-bottom:12px}
+.essay-textarea{width:100%;height:80px;border:1.5px solid #d0d4de;border-radius:6px;padding:10px;font-family:'Noto Sans KR',sans-serif;font-size:13px;resize:vertical;color:#333}
+.essay-textarea:focus{outline:none;border-color:#1a2744}
+.toggle-ans-btn{margin-top:10px;padding:7px 16px;background:#f0f2f5;color:#1a2744;border:1.5px solid #1a2744;border-radius:5px;font-size:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif}
+.toggle-ans-btn:hover{background:#1a2744;color:#c8a84b}
+.model-answer{display:none;margin-top:10px;background:#e8f5e9;border-left:4px solid #4caf50;padding:10px 14px;font-size:13px;color:#1b5e20;border-radius:0 6px 6px 0;line-height:1.8}
+.model-answer.show{display:block}
+
+/* ANSWER SHEET */
+.ans-row{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px;padding:10px 14px;background:#fff;border-radius:6px;box-shadow:0 1px 3px rgba(0,0,0,0.05)}
+.ans-num{font-weight:700;color:#1a2744;min-width:24px}
+.ans-val{font-size:15px;color:#c8a84b;font-weight:700;min-width:30px}
+.ans-explain{font-size:12px;color:#555;line-height:1.7}
+.ans-essay{background:#fff;border-radius:8px;padding:16px 20px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,0.05)}
+.ans-essay-label{font-size:12px;font-weight:700;color:#1a2744;margin-bottom:6px}
+.ans-essay-content{font-size:13px;color:#333;line-height:1.9;border-left:4px solid #c8a84b;padding-left:12px}
+
+/* RESPONSIVE */
+@media(max-width:700px){
+  #sidebar{width:180px;min-width:180px}
+  #content{padding:16px}
+}
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <div class="sidebar-title">
+    에듀케레 분석지
+    <div class="sidebar-subtitle">EBS 고교영어독해연습 4</div>
+  </div>
+  <button class="passage-btn active" onclick="showPassage(0)">
+    <span class="passage-num">Gateway</span>
+    Coopetition in Sport
+  </button>
+  <button class="passage-btn" onclick="showPassage(1)">
+    <span class="passage-num">지문 1</span>
+    Knowledge &amp; Food/Energy
+  </button>
+  <button class="passage-btn" onclick="showPassage(2)">
+    <span class="passage-num">지문 2</span>
+    Journalism &amp; People
+  </button>
+  <button class="passage-btn" onclick="showPassage(3)">
+    <span class="passage-num">지문 3</span>
+    Science &amp; Critical Thinking
+  </button>
+  <button class="passage-btn" onclick="showPassage(4)">
+    <span class="passage-num">지문 4</span>
+    Anxiety into Compassion
+  </button>
+  <div class="sidebar-footer">에듀케레 영수학원<br>055.363.8010</div>
+</div>
+
+<div id="main">
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="showTab(0)">① 전문</button>
+    <button class="tab-btn" onclick="showTab(1)">② 문장분석</button>
+    <button class="tab-btn" onclick="showTab(2)">③ 핵심단어</button>
+    <button class="tab-btn" onclick="showTab(3)">④ 전문해석</button>
+    <button class="tab-btn" onclick="showTab(4)">⑤ 주제·요지</button>
+    <button class="tab-btn" onclick="showTab(5)">⑥ 변형문제</button>
+    <button class="tab-btn" onclick="showTab(6)">⑦ 정답지</button>
+  </div>
+  <div id="content">
+<!-- PASSAGE 0: Coopetition in Sport -->
+<div class="passage-panel active" id="panel-0">
+
+<!-- TAB 0: 전문 -->
+<div class="tab-panel active" id="p0-t0">
+  <div class="section-title">전문 <span class="section-subtitle">Gateway · Coopetition in Sport</span></div>
+  <div class="full-text-box">
+    <p>A sport ecosystem exists based on the type and rate of coopetition existing. Coopetition is a term that blends cooperation and competition into a single concept. In the world of sport, coopetition refers to situations where rivals cooperate in order to make the game possible. There must be two or more participants who agree on the rules of the sport, ensure that those rules are followed during competition, and cooperate by playing the game itself. Any sport ecosystem requires this minimum level of cooperation to function properly. While a sports team or individual athlete might work hard to defeat others in competition, there is also a need to maintain the sport itself in order to have opponents to compete against. This is especially the case in professional sport, where organizations and athletes have a financial interest in ensuring the sport they play is healthy and competitive. A sports league is the ultimate example of coopetition, where competitors must cooperate to create the sporting product that they all sell for their collective and individual benefit.</p>
+  </div>
+</div>
+
+<!-- TAB 1: 문장분석 -->
+<div class="tab-panel" id="p0-t1">
+  <div class="section-title">문장분석</div>
+
+  <div class="sent-block">
+    <div class="sent-num">① </div>
+    <div class="sent-en">A sport ecosystem exists based on the type and rate of coopetition existing.</div>
+    <div class="sent-slash">A sport ecosystem / exists / based on the type and rate / of coopetition existing.</div>
+    <div class="sent-ko">스포츠 생태계는 / 존재한다 / 유형과 비율에 기반하여 / 존재하는 coopetition의.</div>
+    <div class="gram-item"><span class="gram-name">◆ based on + 명사 (분사구 — 근거/기반)</span><br><span class="gram-ex">▶ exists <u>based on</u> the type and rate of coopetition</span><br><span class="gram-tip">★ based on = '~에 근거하여'. 분사구로 부사 역할. 수동 분사구문 형태.</span></div>
+    <div class="gram-item"><span class="gram-name">◆ 동명사/현재분사 existing (후치 수식)</span><br><span class="gram-ex">▶ the type and rate of coopetition <u>existing</u></span><br><span class="gram-tip">★ coopetition을 후치 수식하는 현재분사. = coopetition that exists로 풀어 쓸 수 있음.</span></div>
+  </div>
+
+  <div class="sent-block">
+    <div class="sent-num">② </div>
+    <div class="sent-en">Coopetition is a term that blends cooperation and competition into a single concept.</div>
+    <div class="sent-slash">Coopetition / is a term / that blends cooperation and competition / into a single concept.</div>
+    <div class="sent-ko">Coopetition은 / 하나의 용어이다 / 협력과 경쟁을 혼합하는 / 하나의 개념으로.</div>
+    <div class="gram-item"><span class="gram-name">◆ 관계대명사 that (주격)</span><br><span class="gram-ex">▶ a term <u>that blends</u> cooperation and competition</span><br><span class="gram-tip">★ 선행사(term)를 수식하는 주격 관계대명사절. that vs. which 선택형 출제 빈번.</span></div>
+    <div class="gram-item"><span class="gram-name">◆ blend A and B into C</span><br><span class="gram-ex">▶ blends cooperation and competition into a single concept</span><br><span class="gram-tip">★ 'A와 B를 C로 혼합하다' 구조. 전치사 into의 결과·변화 용법.</span></div>
+  </div>
+
+  <div class="sent-block">
+    <div class="sent-num">③ </div>
+    <div class="sent-en">In the world of sport, coopetition refers to situations where rivals cooperate in order to make the game possible.</div>
+    <div class="sent-slash">In the world of sport, / coopetition refers to situations / where rivals cooperate / in order to make the game possible.</div>
+    <div class="sent-ko">스포츠 세계에서, / coopetition은 상황을 가리킨다 / 경쟁자들이 협력하는 / 경기를 가능하게 하기 위해.</div>
+    <div class="gram-item"><span class="gram-name">◆ 관계부사 where</span><br><span class="gram-ex">▶ situations <u>where</u> rivals cooperate</span><br><span class="gram-tip">★ 선행사가 장소·상황 명사(situations)일 때 관계부사 where 사용. in which로 교체 가능.</span></div>
+    <div class="gram-item"><span class="gram-name">◆ in order to + 동사원형 (목적)</span><br><span class="gram-ex">▶ in order to make the game possible</span><br><span class="gram-tip">★ 목적 표현. to부정사와 동일하나 in order to는 목적 의미 더 강조. make + 목적어 + 형용사 5형식 구조.</span></div>
+  </div>
+
+  <div class="sent-block">
+    <div class="sent-num">④ </div>
+    <div class="sent-en">There must be two or more participants who agree on the rules of the sport, ensure that those rules are followed during competition, and cooperate by playing the game itself.</div>
+    <div class="sent-slash">There must be two or more participants / who agree on the rules of the sport, / ensure that those rules are followed during competition, / and cooperate by playing the game itself.</div>
+    <div class="sent-ko">두 명 이상의 참가자가 있어야 한다 / 스포츠 규칙에 동의하고, / 경기 중 그 규칙이 지켜지도록 보장하며, / 경기 자체를 함으로써 협력하는.</div>
+    <div class="gram-item"><span class="gram-name">◆ There must be + 명사 (존재 표현)</span><br><span class="gram-ex">▶ There must be two or more participants</span><br><span class="gram-tip">★ There is/are 구문에 조동사 must 결합. 주어는 뒤에 오는 명사.</span></div>
+    <div class="gram-item"><span class="gram-name">◆ 병렬구조 (agree / ensure / cooperate)</span><br><span class="gram-ex">▶ who agree ~, ensure ~, and cooperate ~</span><br><span class="gram-tip">★ 관계대명사 who에 걸리는 동사 3개 병렬. 동사 원형 형태 일치 확인 출제.</span></div>
+    <div class="gram-item"><span class="gram-name">◆ 수동태 are followed</span><br><span class="gram-ex">▶ ensure that those rules <u>are followed</u></span><br><span class="gram-tip">★ ensure that + 주어 + 수동태. follow→be followed 능/수동 전환 문제 출제.</span></div>
+  </div>
+
+  <div class="sent-block">
+    <div class="sent-num">⑤ </div>
+    <div class="sent-en">Any sport ecosystem requires this minimum level of cooperation to function properly.</div>
+    <div class="sent-slash">Any sport ecosystem / requires this minimum level of cooperation / to function properly.</div>
+    <div class="sent-ko">모든 스포츠 생태계는 / 이 최소한의 협력 수준을 필요로 한다 / 제대로 작동하기 위해.</div>
+    <div class="gram-item"><span class="gram-name">◆ to부정사 (부사적 용법 — 목적)</span><br><span class="gram-ex">▶ requires cooperation <u>to function</u> properly</span><br><span class="gram-tip">★ '~하기 위해'의 목적 용법. in order to로 교체 가능.</span></div>
+  </div>
+
+  <div class="sent-block">
+    <div class="sent-num">⑥ </div>
+    <div class="sent-en">While a sports team or individual athlete might work hard to defeat others in competition, there is also a need to maintain the sport itself in order to have opponents to compete against.</div>
+    <div class="sent-slash">While a sports team or individual athlete / might work hard to defeat others in competition, / there is also a need / to maintain the sport itself / in order to have opponents to compete against.</div>
+    <div class="sent-ko">스포츠 팀이나 개인 선수가 / 경기에서 다른 이들을 이기기 위해 열심히 노력할 수 있지만, / 필요도 있다 / 스포츠 자체를 유지할 / 맞설 상대를 두기 위해.</div>
+    <div class="gram-item"><span class="gram-name">◆ 양보 접속사 While</span><br><span class="gram-ex">▶ <u>While</u> a sports team might work hard ~</span><br><span class="gram-tip">★ '~이지만, ~하는 반면'의 대조·양보. although와 혼용 주의.</span></div>
+    <div class="gram-item"><span class="gram-name">◆ there is a need + to부정사</span><br><span class="gram-ex">▶ there is also a need <u>to maintain</u></span><br><span class="gram-tip">★ need를 수식하는 to부정사 형용사적 용법.</span></div>
+  </div>
+
+  <div class="sent-block">
+    <div class="sent-num">⑦ </div>
+    <div class="sent-en">This is especially the case in professional sport, where organizations and athletes have a financial interest in ensuring the sport they play is healthy and competitive.</div>
+    <div class="sent-slash">This is especially the case / in professional sport, / where organizations and athletes / have a financial interest / in ensuring the sport they play / is healthy and competitive.</div>
+    <div class="sent-ko">이것은 특히 프로 스포츠에서 해당된다, / 여기서 조직과 선수들은 / 재정적 이해관계를 갖는다 / 그들이 하는 스포츠가 / 건전하고 경쟁적임을 보장하는 데.</div>
+    <div class="gram-item"><span class="gram-name">◆ 계속적 용법 관계부사 where</span><br><span class="gram-ex">▶ in professional sport, <u>where</u> organizations ~</span><br><span class="gram-tip">★ 콤마 + where = 계속적 용법. 선행사(professional sport)에 대해 부연 설명.</span></div>
+    <div class="gram-item"><span class="gram-name">◆ have an interest in + 동명사</span><br><span class="gram-ex">▶ have a financial interest <u>in ensuring</u></span><br><span class="gram-tip">★ interest in 다음에는 반드시 명사/동명사. ensuring → to ensure 오류 출제.</span></div>
+  </div>
+
+  <div class="sent-block">
+    <div class="sent-num">⑧ </div>
+    <div class="sent-en">A sports league is the ultimate example of coopetition, where competitors must cooperate to create the sporting product that they all sell for their collective and individual benefit.</div>
+    <div class="sent-slash">A sports league / is the ultimate example of coopetition, / where competitors must cooperate / to create the sporting product / that they all sell / for their collective and individual benefit.</div>
+    <div class="sent-ko">스포츠 리그는 / coopetition의 궁극적인 예이다, / 여기서 경쟁자들은 반드시 협력해야 한다 / 스포츠 상품을 만들어내기 위해 / 그들 모두가 판매하는 / 집단적·개인적 이익을 위해.</div>
+    <div class="gram-item"><span class="gram-name">◆ 계속적 용법 where + 목적절 that</span><br><span class="gram-ex">▶ where competitors ~ the sporting product <u>that</u> they all sell</span><br><span class="gram-tip">★ 중첩 관계사 구조. that은 sporting product를 선행사로 하는 목적격 관계대명사 (생략 가능).</span></div>
+    <div class="gram-item"><span class="gram-name">◆ 목적 to부정사</span><br><span class="gram-ex">▶ must cooperate <u>to create</u> the sporting product</span><br><span class="gram-tip">★ cooperate to create = 협력하여 만들어내다. must + 동사원형 조동사 확인.</span></div>
+  </div>
+</div>
+
+<!-- TAB 2: 핵심단어 -->
+<div class="tab-panel" id="p0-t2">
+  <div class="section-title">핵심단어</div>
+  <div class="vocab-item"><span class="vocab-word">coopetition</span><span class="vocab-meaning">협력적 경쟁 (협력+경쟁 합성어)</span><span class="vocab-pos">n.</span><span class="vocab-deriv">cooperate (v.), competition (n.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">rival</span><span class="vocab-meaning">경쟁자, 라이벌</span><span class="vocab-pos">n./v./adj.</span><span class="vocab-deriv">rivalry (n.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">ecosystem</span><span class="vocab-meaning">생태계</span><span class="vocab-pos">n.</span><span class="vocab-deriv">ecology (n.), ecological (adj.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">participant</span><span class="vocab-meaning">참가자</span><span class="vocab-pos">n.</span><span class="vocab-deriv">participate (v.), participation (n.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">ensure</span><span class="vocab-meaning">보장하다, 확실히 하다</span><span class="vocab-pos">v.</span><span class="vocab-deriv">assure (v.), insure (v.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">defeat</span><span class="vocab-meaning">이기다, 패배시키다</span><span class="vocab-pos">v./n.</span><span class="vocab-deriv">—</span></div>
+  <div class="vocab-item"><span class="vocab-word">maintain</span><span class="vocab-meaning">유지하다</span><span class="vocab-pos">v.</span><span class="vocab-deriv">maintenance (n.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">opponent</span><span class="vocab-meaning">상대방, 반대자</span><span class="vocab-pos">n.</span><span class="vocab-deriv">oppose (v.), opposition (n.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">financial</span><span class="vocab-meaning">재정적인</span><span class="vocab-pos">adj.</span><span class="vocab-deriv">finance (n./v.), financially (adv.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">collective</span><span class="vocab-meaning">집단적인, 공동의</span><span class="vocab-pos">adj./n.</span><span class="vocab-deriv">collect (v.), collectively (adv.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">ultimate</span><span class="vocab-meaning">궁극적인, 최고의</span><span class="vocab-pos">adj.</span><span class="vocab-deriv">ultimately (adv.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">competitive</span><span class="vocab-meaning">경쟁적인</span><span class="vocab-pos">adj.</span><span class="vocab-deriv">compete (v.), competition (n.), competitor (n.)</span></div>
+</div>
+
+<!-- TAB 3: 전문해석 -->
+<div class="tab-panel" id="p0-t3">
+  <div class="section-title">전문해석</div>
+  <div class="trans-box">
+    Coopetition은 협력(cooperation)과 경쟁(competition)을 하나의 개념으로 결합한 용어다. 스포츠 세계에서 coopetition은 경쟁자들이 경기 자체를 가능하게 하기 위해 서로 협력하는 상황을 가리킨다. 스포츠의 규칙에 동의하고, 경기 중 그 규칙이 지켜지도록 보장하며, 경기 자체에 참여함으로써 협력하는 두 명 이상의 참가자가 반드시 있어야 한다. 어떤 스포츠 생태계든 제대로 기능하려면 이 최소한의 협력 수준이 필요하다. 스포츠 팀이나 개인 선수가 경기에서 상대를 이기기 위해 열심히 노력하는 동시에, 맞설 상대를 확보하기 위해 스포츠 자체를 유지할 필요도 있다. 이는 특히 프로 스포츠에서 더욱 그러한데, 조직과 선수들 모두 자신이 종사하는 스포츠가 건전하고 경쟁력 있게 유지되는 데 재정적 이해관계를 갖기 때문이다. 스포츠 리그는 coopetition의 궁극적인 사례로, 경쟁자들이 반드시 협력하여 자신들 모두가 집단적·개인적 이익을 위해 판매하는 스포츠 상품을 창출해야 한다.
+  </div>
+</div>
+
+<!-- TAB 4: 주제·요지 -->
+<div class="tab-panel" id="p0-t4">
+  <div class="section-title">주제·요지·구조</div>
+  <div class="topic-box">
+    <div class="topic-label">주제</div>
+    <div class="topic-content">스포츠에서 협력과 경쟁을 동시에 실현하는 coopetition의 개념과 필요성</div>
+  </div>
+  <div class="topic-box">
+    <div class="topic-label">요지</div>
+    <div class="topic-content">스포츠에서 경쟁자들은 경기 자체를 성립시키고 유지하기 위해 기본적인 협력을 필요로 하며, 이는 특히 프로 스포츠 리그에서 두드러진다.</div>
+  </div>
+  <div class="topic-box">
+    <div class="topic-label">구조 흐름</div>
+    <div class="structure-step"><span class="step-badge">도입</span><span class="step-text">Coopetition의 개념 정의 — 협력과 경쟁의 합성어</span></div>
+    <div class="structure-step"><span class="step-badge">전개 1</span><span class="step-text">스포츠 생태계에서 협력이 필수적인 이유 — 규칙 합의, 경기 성립</span></div>
+    <div class="structure-step"><span class="step-badge">전개 2</span><span class="step-text">프로 스포츠에서 재정적 이해관계에 의한 협력의 필요성</span></div>
+    <div class="structure-step"><span class="step-badge">결론</span><span class="step-text">스포츠 리그 = coopetition의 궁극적 사례</span></div>
+  </div>
+</div>
+
+<!-- TAB 5: 변형문제 -->
+<div class="tab-panel" id="p0-t5">
+  <div class="section-title">변형문제</div>
+
+  <div class="quiz-block" id="q0-1">
+    <div class="quiz-num">1번</div>
+    <div class="quiz-type">주제 추론</div>
+    <div class="quiz-question">다음 글의 주제로 가장 적절한 것은?</div>
+    <div class="quiz-passage">A sport ecosystem exists based on the type and rate of coopetition existing. Coopetition is a term that blends cooperation and competition into a single concept. In the world of sport, coopetition refers to situations where rivals cooperate in order to make the game possible... A sports league is the ultimate example of coopetition, where competitors must cooperate to create the sporting product that they all sell for their collective and individual benefit.</div>
+    <button class="choice-btn" onclick="selectChoice(this,0,2,'스포츠 리그에서 경쟁이 협력보다 중요한 이유')">① 스포츠 리그에서 경쟁이 협력보다 중요한 이유</button>
+    <button class="choice-btn" onclick="selectChoice(this,0,2,'스포츠에서 coopetition의 개념과 그 필요성')">② 스포츠에서 coopetition의 개념과 그 필요성</button>
+    <button class="choice-btn" onclick="selectChoice(this,0,2,'프로 스포츠 선수들이 재정적 성공을 거두는 방법')">③ 프로 스포츠 선수들이 재정적 성공을 거두는 방법</button>
+    <button class="choice-btn" onclick="selectChoice(this,0,2,'스포츠 규칙이 경기의 공정성을 보장하는 방식')">④ 스포츠 규칙이 경기의 공정성을 보장하는 방식</button>
+    <button class="choice-btn" onclick="selectChoice(this,0,2,'경쟁자들 간의 갈등이 스포츠 발전을 저해하는 원인')">⑤ 경쟁자들 간의 갈등이 스포츠 발전을 저해하는 원인</button>
+    <div class="quiz-explain" id="q0-1-exp">② 글 전체가 coopetition의 정의, 스포츠에서의 작동 방식, 프로 스포츠 리그의 사례를 통해 협력과 경쟁의 공존 필요성을 설명하고 있다.</div>
+    <button class="reset-btn" onclick="resetQuiz(0,1)">↺ 다시풀기</button>
+  </div>
+
+  <div class="quiz-block" id="q0-2">
+    <div class="quiz-num">2번</div>
+    <div class="quiz-type">빈칸 추론</div>
+    <div class="quiz-question">다음 빈칸에 들어갈 말로 가장 적절한 것은?</div>
+    <div class="quiz-passage">In the world of sport, coopetition refers to situations where rivals cooperate in order to make the game possible. Any sport ecosystem requires this minimum level of cooperation to function properly. While a sports team or individual athlete might work hard to defeat others in competition, there is also a need to maintain the sport itself in order to have opponents to compete against. A sports league is the ultimate example of __________, where competitors must cooperate to create the sporting product that they all sell for their collective and individual benefit.</div>
+    <button class="choice-btn" onclick="selectChoice(this,1,1,'competition')">① competition</button>
+    <button class="choice-btn" onclick="selectChoice(this,1,1,'coopetition')">② coopetition</button>
+    <button class="choice-btn" onclick="selectChoice(this,1,1,'regulation')">③ regulation</button>
+    <button class="choice-btn" onclick="selectChoice(this,1,1,'cooperation')">④ cooperation</button>
+    <button class="choice-btn" onclick="selectChoice(this,1,1,'negotiation')">⑤ negotiation</button>
+    <div class="quiz-explain" id="q0-2-exp">② 스포츠 리그는 경쟁자들이 협력하여 공동의 이익을 위한 스포츠 상품을 만들어내는 coopetition의 궁극적인 사례이다.</div>
+    <button class="reset-btn" onclick="resetQuiz(0,2)">↺ 다시풀기</button>
+  </div>
+
+  <div class="quiz-block" id="q0-3">
+    <div class="quiz-num">3번</div>
+    <div class="quiz-type">어법 오류 찾기</div>
+    <div class="quiz-question">다음 밑줄 친 부분 중 어법상 틀린 것은?</div>
+    <div class="quiz-passage">There must be two or more participants who <span class="quiz-underline" onclick="selectUnderline(this,0,3,false)">①agree</span> on the rules of the sport, <span class="quiz-underline" onclick="selectUnderline(this,0,3,false)">②ensure</span> that those rules are <span class="quiz-underline" onclick="selectUnderline(this,0,3,false)">③followed</span> during competition, and cooperate by <span class="quiz-underline" onclick="selectUnderline(this,0,3,false)">④playing</span> the game itself. This is especially the case in professional sport, where organizations and athletes have a financial interest in <span class="quiz-underline" onclick="selectUnderline(this,0,3,true)">⑤to ensure</span> the sport they play is healthy and competitive.</div>
+    <div class="quiz-explain" id="q0-3-exp">⑤ have an interest in 다음에는 동명사(ensuring)가 와야 한다. to ensure는 전치사 in의 목적어가 될 수 없다.</div>
+    <button class="reset-btn" onclick="resetQuiz(0,3)">↺ 다시풀기</button>
+  </div>
+
+  <div class="quiz-block" id="q0-4">
+    <div class="quiz-num">4번</div>
+    <div class="quiz-type">내용 불일치</div>
+    <div class="quiz-question">다음 글의 내용과 일치하지 않는 것은?</div>
+    <button class="choice-btn" onclick="selectChoice(this,3,4,'coopetition은 협력과 경쟁을 결합한 개념이다.')">① coopetition은 협력과 경쟁을 결합한 개념이다.</button>
+    <button class="choice-btn" onclick="selectChoice(this,3,4,'스포츠 생태계가 제대로 작동하려면 최소한의 협력이 필요하다.')">② 스포츠 생태계가 제대로 작동하려면 최소한의 협력이 필요하다.</button>
+    <button class="choice-btn" onclick="selectChoice(this,3,4,'프로 스포츠에서 선수들은 스포츠 자체의 건전성에 재정적 이해관계가 없다.')">③ 프로 스포츠에서 선수들은 스포츠 자체의 건전성에 재정적 이해관계가 없다.</button>
+    <button class="choice-btn" onclick="selectChoice(this,3,4,'스포츠 리그에서 경쟁자들은 공동 이익을 위한 스포츠 상품을 만들기 위해 협력해야 한다.')">④ 스포츠 리그에서 경쟁자들은 공동 이익을 위한 스포츠 상품을 만들기 위해 협력해야 한다.</button>
+    <button class="choice-btn" onclick="selectChoice(this,3,4,'coopetition은 스포츠 리그의 궁극적 사례로 제시된다.')">⑤ coopetition은 스포츠 리그의 궁극적 사례로 제시된다.</button>
+    <div class="quiz-explain" id="q0-4-exp">③ 본문에서 프로 스포츠의 조직과 선수들은 스포츠가 건전하고 경쟁적으로 유지되는 데 재정적 이해관계(financial interest)를 갖는다고 명시되어 있다.</div>
+    <button class="reset-btn" onclick="resetQuiz(0,4)">↺ 다시풀기</button>
+  </div>
+
+  <div class="quiz-block" id="q0-5">
+    <div class="quiz-num">5번</div>
+    <div class="quiz-type">글의 순서 배열</div>
+    <div class="quiz-question">주어진 글 다음에 이어질 글의 순서로 가장 적절한 것은?</div>
+    <div class="quiz-passage">A sport ecosystem exists based on the type and rate of coopetition existing. Coopetition is a term that blends cooperation and competition into a single concept. In the world of sport, coopetition refers to situations where rivals cooperate in order to make the game possible.</div>
+    <div class="quiz-passage"><b>(A)</b> While a sports team or individual athlete might work hard to defeat others in competition, there is also a need to maintain the sport itself in order to have opponents to compete against.<br><b>(B)</b> A sports league is the ultimate example of coopetition, where competitors must cooperate to create the sporting product that they all sell for their collective and individual benefit.<br><b>(C)</b> There must be two or more participants who agree on the rules of the sport, ensure that those rules are followed during competition, and cooperate by playing the game itself. Any sport ecosystem requires this minimum level of cooperation to function properly.</div>
+    <button class="choice-btn" onclick="selectChoice(this,4,2,'(A)-(B)-(C)')">① (A)-(B)-(C)</button>
+    <button class="choice-btn" onclick="selectChoice(this,4,2,'(A)-(C)-(B)')">② (A)-(C)-(B)</button>
+    <button class="choice-btn" onclick="selectChoice(this,4,2,'(C)-(A)-(B)')">③ (C)-(A)-(B)</button>
+    <button class="choice-btn" onclick="selectChoice(this,4,2,'(C)-(B)-(A)')">④ (C)-(B)-(A)</button>
+    <button class="choice-btn" onclick="selectChoice(this,4,2,'(B)-(C)-(A)')">⑤ (B)-(C)-(A)</button>
+    <div class="quiz-explain" id="q0-5-exp">③ C(참가자 조건·생태계 협력 필요성) → A(팀/선수의 경쟁과 협력 필요성) → B(스포츠 리그 = 궁극적 사례)의 흐름이 자연스럽다.</div>
+    <button class="reset-btn" onclick="resetQuiz(0,5)">↺ 다시풀기</button>
+  </div>
+
+  <!-- 서술형 -->
+  <div class="essay-block">
+    <div class="essay-label">[서술형 1] 빈칸 요약</div>
+    <div class="essay-condition">조건: 본문에서 알맞은 단어를 찾아 쓰시오.</div>
+    <div class="essay-question">In sport, even fierce rivals must __________ with each other to keep the game alive, because without opponents, __________ itself becomes impossible.</div>
+    <textarea class="essay-textarea" placeholder="답안을 작성하세요..."></textarea>
+    <button class="toggle-ans-btn" onclick="toggleAns(this)">모범답안 보기</button>
+    <div class="model-answer">cooperate / competition</div>
+  </div>
+
+  <div class="essay-block">
+    <div class="essay-label">[서술형 2] 내용 서술</div>
+    <div class="essay-condition">조건: 완전한 영어 문장으로, 30단어 내외로 쓰시오.</div>
+    <div class="essay-question">스포츠 리그가 coopetition의 궁극적인 예인 이유를 설명하시오.</div>
+    <textarea class="essay-textarea" placeholder="답안을 작성하세요..."></textarea>
+    <button class="toggle-ans-btn" onclick="toggleAns(this)">모범답안 보기</button>
+    <div class="model-answer">A sports league is the ultimate example of coopetition because its competitors must cooperate to create a sporting product that they all sell for their collective and individual benefit.</div>
+  </div>
+</div>
+
+<!-- TAB 6: 정답지 -->
+<div class="tab-panel" id="p0-t6">
+  <div class="section-title">정답 및 해설</div>
+  <div class="ans-row"><span class="ans-num">1</span><span class="ans-val">②</span><span class="ans-explain">글 전체가 coopetition의 정의와 스포츠 생태계에서의 협력 필요성을 다루고 있다.</span></div>
+  <div class="ans-row"><span class="ans-num">2</span><span class="ans-val">②</span><span class="ans-explain">스포츠 리그는 경쟁자들이 공동 이익을 위해 협력하는 coopetition의 궁극적 예이다.</span></div>
+  <div class="ans-row"><span class="ans-num">3</span><span class="ans-val">⑤</span><span class="ans-explain">전치사 in 다음에는 동명사 ensuring이 와야 한다. to ensure는 불가.</span></div>
+  <div class="ans-row"><span class="ans-num">4</span><span class="ans-val">③</span><span class="ans-explain">프로 스포츠 선수들은 스포츠의 건전성 유지에 재정적 이해관계를 갖는다고 명시되어 있다.</span></div>
+  <div class="ans-row"><span class="ans-num">5</span><span class="ans-val">③</span><span class="ans-explain">C(협력의 조건) → A(경쟁과 협력의 공존 필요) → B(스포츠 리그 사례) 순서가 논리적.</span></div>
+  <div class="ans-essay">
+    <div class="ans-essay-label">[서술형 1] 모범답안</div>
+    <div class="ans-essay-content">cooperate / competition</div>
+  </div>
+  <div class="ans-essay">
+    <div class="ans-essay-label">[서술형 2] 모범답안</div>
+    <div class="ans-essay-content">A sports league is the ultimate example of coopetition because its competitors must cooperate to create a sporting product that they all sell for their collective and individual benefit.</div>
+  </div>
+</div>
+
+</div><!-- end panel-0 -->
+<!-- PASSAGE 1: Knowledge as Key to Food and Energy -->
+<div class="passage-panel" id="panel-1">
+
+<!-- TAB 0: 전문 -->
+<div class="tab-panel active" id="p1-t0">
+  <div class="section-title">전문 <span class="section-subtitle">지문 1 · Knowledge as the Key to Food and Energy</span></div>
+  <div class="full-text-box">
+    <p>There's a saying that "you can't eat information." That may be so, but the food we eat today is the fruit of thousands of years of increasingly high-quality information — the knowledge of how to farm — what seeds, what tools and how to use them, what times of year, what irrigation, what sequence of one crop after another on the same land. What we eat is solar energy, filtered, concentrated, and distilled through the lens of human knowledge. The energy the Earth receives from the sun each year has remained more or less constant through all of human civilization. What's allowed us to flourish is our increasingly sophisticated knowledge of how to capture an ever-growing but still tiny fraction of that energy in a form that can fuel our bodies. Every step in the advancement of our knowledge has brought with it an increase in the amount of energy we can tap into.</p>
+  </div>
+</div>
+
+<!-- TAB 1: 문장분석 -->
+<div class="tab-panel" id="p1-t1">
+  <div class="section-title">문장분석</div>
+
+  <div class="sent-block">
+    <div class="sent-num">① </div>
+    <div class="sent-en">There's a saying that "you can't eat information."</div>
+    <div class="sent-slash">There's a saying / that "you can't eat information."</div>
+    <div class="sent-ko">"정보는 먹을 수 없다"는 / 말이 있다.</div>
+    <div class="gram-item"><span class="gram-name">◆ There is + 명사 + 동격 that절</span><br><span class="gram-ex">▶ There's a saying <u>that</u> "you can't eat information"</span><br><span class="gram-tip">★ saying, fact, idea 뒤의 that절은 동격. 관계대명사 that과 구별 — 동격 that은 완전한 절을 이끔.</span></div>
+  </div>
+
+  <div class="sent-block">
+    <div class="sent-num">② </div>
+    <div class="sent-en">That may be so, but the food we eat today is the fruit of thousands of years of increasingly high-quality information — the knowledge of how to farm — what seeds, what tools and how to use them, what times of year, what irrigation, what sequence of one crop after another on the same land.</div>
+    <div class="sent-slash">That may be so, / but the food we eat today / is the fruit / of thousands of years of increasingly high-quality information / — the knowledge of how to farm — / what seeds, what tools and how to use them, / what times of year, what irrigation, / what sequence of one crop after another on the same land.</div>
+    <div class="sent-ko">그것이 맞을 수도 있지만, / 오늘날 우리가 먹는 음식은 / 결실이다 / 수천 년에 걸친 점점 더 질 높은 정보의 / — 농사 짓는 방법에 대한 지식 — / 어떤 씨앗, 어떤 도구와 그 사용법, / 어느 계절, 어떤 관개 방식, / 같은 땅에서 이어지는 작물의 어떤 순서.</div>
+    <div class="gram-item"><span class="gram-name">◆ 관계대명사절 생략 (the food we eat)</span><br><span class="gram-ex">▶ the food <u>(that) we eat</u> today</span><br><span class="gram-tip">★ 목적격 관계대명사 that/which 생략. the food which we eat today로 복원 가능.</span></div>
+    <div class="gram-item"><span class="gram-name">◆ 동격 대시(—) 구조</span><br><span class="gram-ex">▶ high-quality information <u>— the knowledge of how to farm —</u></span><br><span class="gram-tip">★ 대시(—) 사이의 내용이 앞 명사(information)를 구체적으로 설명하는 동격 표현.</span></div>
+    <div class="gram-item"><span class="gram-name">◆ 간접의문문 what 병렬</span><br><span class="gram-ex">▶ <u>what</u> seeds, <u>what</u> tools, <u>what</u> times, <u>what</u> irrigation, <u>what</u> sequence</span><br><span class="gram-tip">★ the knowledge of 뒤에 what 이하 간접의문문이 병렬 나열. 수능 구조 파악 출제.</span></div>
+  </div>
+
+  <div class="sent-block">
+    <div class="sent-num">③ </div>
+    <div class="sent-en">What we eat is solar energy, filtered, concentrated, and distilled through the lens of human knowledge.</div>
+    <div class="sent-slash">What we eat / is solar energy, / filtered, concentrated, and distilled / through the lens of human knowledge.</div>
+    <div class="sent-ko">우리가 먹는 것은 / 태양 에너지이다, / 걸러지고, 농축되고, 증류된 / 인간 지식이라는 렌즈를 통해.</div>
+    <div class="gram-item"><span class="gram-name">◆ 관계대명사 what (주어절)</span><br><span class="gram-ex">▶ <u>What we eat</u> is solar energy</span><br><span class="gram-tip">★ What = the thing that. 명사절로 문장의 주어 역할. what절 주어는 단수 취급.</span></div>
+    <div class="gram-item"><span class="gram-name">◆ 분사 병렬 후치수식 (filtered / concentrated / distilled)</span><br><span class="gram-ex">▶ solar energy, <u>filtered, concentrated, and distilled</u></span><br><span class="gram-tip">★ 과거분사 3개가 solar energy를 후치 수식. being filtered ~의 분사구문으로도 해석 가능.</span></div>
+  </div>
+
+  <div class="sent-block">
+    <div class="sent-num">④ </div>
+    <div class="sent-en">The energy the Earth receives from the sun each year has remained more or less constant through all of human civilization.</div>
+    <div class="sent-slash">The energy / the Earth receives from the sun each year / has remained more or less constant / through all of human civilization.</div>
+    <div class="sent-ko">지구가 매년 태양으로부터 받는 / 에너지는 / 대략 일정하게 유지되어 왔다 / 인류 문명 전체를 통틀어.</div>
+    <div class="gram-item"><span class="gram-name">◆ 목적격 관계대명사 생략</span><br><span class="gram-ex">▶ The energy <u>(that) the Earth receives</u> from the sun</span><br><span class="gram-tip">★ 목적격 관계대명사 that/which 생략. 선행사(energy)와 동사(has remained) 사이 거리 주의.</span></div>
+    <div class="gram-item"><span class="gram-name">◆ 현재완료 has remained (계속 용법)</span><br><span class="gram-ex">▶ <u>has remained</u> more or less constant</span><br><span class="gram-tip">★ through all of human civilization과 함께 현재완료 계속. remain + 형용사 보어(constant).</span></div>
+  </div>
+
+  <div class="sent-block">
+    <div class="sent-num">⑤ </div>
+    <div class="sent-en">What's allowed us to flourish is our increasingly sophisticated knowledge of how to capture an ever-growing but still tiny fraction of that energy in a form that can fuel our bodies.</div>
+    <div class="sent-slash">What's allowed us to flourish / is our increasingly sophisticated knowledge / of how to capture / an ever-growing but still tiny fraction of that energy / in a form that can fuel our bodies.</div>
+    <div class="sent-ko">우리가 번성하도록 허용한 것은 / 우리의 점점 더 정교해지는 지식이다 / 어떻게 포착할지에 관한 / 그 에너지의 점점 커지지만 여전히 작은 일부를 / 우리 몸에 연료를 공급할 수 있는 형태로.</div>
+    <div class="gram-item"><span class="gram-name">◆ 관계대명사 what (주어절)</span><br><span class="gram-ex">▶ <u>What's allowed us to flourish</u> is our knowledge</span><br><span class="gram-tip">★ What = the thing that. 주어절로 사용. allow + O + to-v (5형식) 내포.</span></div>
+    <div class="gram-item"><span class="gram-name">◆ 간접의문문 how to + 동사원형</span><br><span class="gram-ex">▶ knowledge of <u>how to capture</u></span><br><span class="gram-tip">★ 의문사 + to부정사 = 명사구. 전치사 of의 목적어.</span></div>
+    <div class="gram-item"><span class="gram-name">◆ 관계대명사 that (주격) — a form that</span><br><span class="gram-ex">▶ in a form <u>that can fuel</u> our bodies</span><br><span class="gram-tip">★ form을 선행사로 하는 주격 관계대명사절.</span></div>
+  </div>
+
+  <div class="sent-block">
+    <div class="sent-num">⑥ </div>
+    <div class="sent-en">Every step in the advancement of our knowledge has brought with it an increase in the amount of energy we can tap into.</div>
+    <div class="sent-slash">Every step / in the advancement of our knowledge / has brought with it / an increase / in the amount of energy / we can tap into.</div>
+    <div class="sent-ko">모든 한 걸음은 / 우리 지식의 발전에서의 / 함께 가져왔다 / 증가를 / 에너지의 양에서의 / 우리가 활용할 수 있는.</div>
+    <div class="gram-item"><span class="gram-name">◆ bring with it + 명사 (수반하다)</span><br><span class="gram-ex">▶ has <u>brought with it</u> an increase</span><br><span class="gram-tip">★ bring with it = '~을 수반하다'. it은 앞의 주어(Every step)를 가리키는 재귀적 표현.</span></div>
+    <div class="gram-item"><span class="gram-name">◆ 현재완료 has brought (결과 용법)</span><br><span class="gram-ex">▶ Every step <u>has brought</u> with it an increase</span><br><span class="gram-tip">★ Every + 단수명사 → 단수 동사. 현재완료로 지식 발전의 누적 결과 강조.</span></div>
+    <div class="gram-item"><span class="gram-name">◆ 목적격 관계대명사 생략 (tap into)</span><br><span class="gram-ex">▶ the amount of energy <u>(that) we can tap into</u></span><br><span class="gram-tip">★ tap into = '~을 활용하다'. 전치사 into가 관계절 끝에 남는 구조. 수능 빈출.</span></div>
+  </div>
+</div>
+
+<!-- TAB 2: 핵심단어 -->
+<div class="tab-panel" id="p1-t2">
+  <div class="section-title">핵심단어</div>
+  <div class="vocab-item"><span class="vocab-word">saying</span><span class="vocab-meaning">속담, 격언</span><span class="vocab-pos">n.</span><span class="vocab-deriv">say (v.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">irrigation</span><span class="vocab-meaning">관개, 물 대기</span><span class="vocab-pos">n.</span><span class="vocab-deriv">irrigate (v.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">sequence</span><span class="vocab-meaning">순서, 연속</span><span class="vocab-pos">n.</span><span class="vocab-deriv">sequential (adj.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">filter</span><span class="vocab-meaning">걸러내다; 필터</span><span class="vocab-pos">v./n.</span><span class="vocab-deriv">filtration (n.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">concentrate</span><span class="vocab-meaning">농축하다; 집중하다</span><span class="vocab-pos">v.</span><span class="vocab-deriv">concentration (n.), concentrated (adj.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">distill</span><span class="vocab-meaning">증류하다; 정수하다</span><span class="vocab-pos">v.</span><span class="vocab-deriv">distillation (n.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">constant</span><span class="vocab-meaning">일정한; 상수</span><span class="vocab-pos">adj./n.</span><span class="vocab-deriv">constantly (adv.), constancy (n.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">civilization</span><span class="vocab-meaning">문명</span><span class="vocab-pos">n.</span><span class="vocab-deriv">civilize (v.), civil (adj.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">flourish</span><span class="vocab-meaning">번성하다, 번창하다</span><span class="vocab-pos">v.</span><span class="vocab-deriv">flourishing (adj.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">sophisticated</span><span class="vocab-meaning">정교한, 세련된</span><span class="vocab-pos">adj.</span><span class="vocab-deriv">sophistication (n.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">fraction</span><span class="vocab-meaning">일부, 분수</span><span class="vocab-pos">n.</span><span class="vocab-deriv">fractional (adj.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">advancement</span><span class="vocab-meaning">발전, 진보</span><span class="vocab-pos">n.</span><span class="vocab-deriv">advance (v./n.), advanced (adj.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">tap into</span><span class="vocab-meaning">~을 활용하다, ~에 접근하다</span><span class="vocab-pos">v. phr.</span><span class="vocab-deriv">tap (v./n.)</span></div>
+</div>
+
+<!-- TAB 3: 전문해석 -->
+<div class="tab-panel" id="p1-t3">
+  <div class="section-title">전문해석</div>
+  <div class="trans-box">
+    "정보는 먹을 수 없다"는 말이 있다. 그것이 맞을 수도 있지만, 오늘날 우리가 먹는 음식은 수천 년에 걸쳐 점점 더 질 높아진 정보, 즉 농사 짓는 방법에 대한 지식 — 어떤 씨앗을 써야 하는지, 어떤 도구를 어떻게 사용하는지, 어느 계절에, 어떤 관개 방식으로, 같은 땅에서 어떤 순서로 작물을 이어가야 하는지 — 의 결실이다. 우리가 먹는 것은 인간 지식이라는 렌즈를 통해 걸러지고, 농축되고, 증류된 태양 에너지이다. 지구가 매년 태양으로부터 받는 에너지의 양은 인류 문명 전체를 통틀어 대략 일정하게 유지되어 왔다. 우리가 번성할 수 있게 해준 것은, 그 에너지 중 점점 커지지만 여전히 작은 일부를 우리 몸에 연료를 공급할 수 있는 형태로 포착하는 방법에 관한 우리의 점점 더 정교해지는 지식이다. 우리 지식이 발전하는 모든 한 걸음은 우리가 활용할 수 있는 에너지의 양의 증가를 수반해 왔다.
+  </div>
+</div>
+
+<!-- TAB 4: 주제·요지 -->
+<div class="tab-panel" id="p1-t4">
+  <div class="section-title">주제·요지·구조</div>
+  <div class="topic-box">
+    <div class="topic-label">주제</div>
+    <div class="topic-content">인간의 정교한 지식이 태양 에너지를 식량과 에너지로 전환하는 핵심 열쇠임</div>
+  </div>
+  <div class="topic-box">
+    <div class="topic-label">요지</div>
+    <div class="topic-content">우리가 먹는 음식은 수천 년간 축적된 농업 지식의 산물이며, 지구가 받는 태양 에너지 총량은 일정하지만 그것을 활용하는 인간의 정교한 지식이 발전할수록 우리가 사용할 수 있는 에너지의 양도 증가해 왔다.</div>
+  </div>
+  <div class="topic-box">
+    <div class="topic-label">구조 흐름</div>
+    <div class="structure-step"><span class="step-badge">도입</span><span class="step-text">"정보는 먹을 수 없다"는 속담 제시 → 반론</span></div>
+    <div class="structure-step"><span class="step-badge">전개 1</span><span class="step-text">음식 = 수천 년 농업 지식의 결실 / 음식 = 지식 렌즈로 걸러진 태양 에너지</span></div>
+    <div class="structure-step"><span class="step-badge">전개 2</span><span class="step-text">태양 에너지 총량은 일정 → 인간의 지식이 활용량을 결정</span></div>
+    <div class="structure-step"><span class="step-badge">결론</span><span class="step-text">지식의 발전 = 활용 가능한 에너지 증가</span></div>
+  </div>
+</div>
+
+<!-- TAB 5: 변형문제 -->
+<div class="tab-panel" id="p1-t5">
+  <div class="section-title">변형문제</div>
+
+  <div class="quiz-block" id="q1-1">
+    <div class="quiz-num">1번</div>
+    <div class="quiz-type">주제 추론</div>
+    <div class="quiz-question">다음 글의 주제로 가장 적절한 것은?</div>
+    <div class="quiz-passage">The food we eat today is the fruit of thousands of years of increasingly high-quality information... What we eat is solar energy, filtered, concentrated, and distilled through the lens of human knowledge... Every step in the advancement of our knowledge has brought with it an increase in the amount of energy we can tap into.</div>
+    <button class="choice-btn" onclick="selectChoice(this,5,3,'태양 에너지가 인류 문명 발전에 미친 직접적 영향')">① 태양 에너지가 인류 문명 발전에 미친 직접적 영향</button>
+    <button class="choice-btn" onclick="selectChoice(this,5,3,'농업 기술의 역사적 발전 과정과 현대 농법의 특징')">② 농업 기술의 역사적 발전 과정과 현대 농법의 특징</button>
+    <button class="choice-btn" onclick="selectChoice(this,5,3,'인류가 번성할 수 있었던 이유는 단순한 에너지가 아닌 정보와 지식임')">③ 인류가 번성할 수 있었던 이유는 단순한 에너지가 아닌 정보와 지식임</button>
+    <button class="choice-btn" onclick="selectChoice(this,5,3,'정보 기술 발전이 식량 문제 해결에 기여하는 방식')">④ 정보 기술 발전이 식량 문제 해결에 기여하는 방식</button>
+    <button class="choice-btn" onclick="selectChoice(this,5,3,'지구가 받는 태양 에너지의 양이 일정한 이유')">⑤ 지구가 받는 태양 에너지의 양이 일정한 이유</button>
+    <div class="quiz-explain" id="q1-1-exp">③ 음식과 에너지 모두 태양에서 오지만, 그것을 활용할 수 있게 하는 것은 인간의 정교한 지식임을 강조하는 글이다.</div>
+    <button class="reset-btn" onclick="resetQuiz(1,1)">↺ 다시풀기</button>
+  </div>
+
+  <div class="quiz-block" id="q1-2">
+    <div class="quiz-num">2번</div>
+    <div class="quiz-type">빈칸 추론</div>
+    <div class="quiz-question">다음 빈칸에 들어갈 말로 가장 적절한 것은?</div>
+    <div class="quiz-passage">What we eat is solar energy, filtered, concentrated, and distilled through the lens of __________. The energy the Earth receives from the sun each year has remained more or less constant through all of human civilization. What's allowed us to flourish is our increasingly sophisticated knowledge of how to capture an ever-growing but still tiny fraction of that energy.</div>
+    <button class="choice-btn" onclick="selectChoice(this,6,1,'technology')">① technology</button>
+    <button class="choice-btn" onclick="selectChoice(this,6,1,'human knowledge')">② human knowledge</button>
+    <button class="choice-btn" onclick="selectChoice(this,6,1,'solar power')">③ solar power</button>
+    <button class="choice-btn" onclick="selectChoice(this,6,1,'modern agriculture')">④ modern agriculture</button>
+    <button class="choice-btn" onclick="selectChoice(this,6,1,'natural selection')">⑤ natural selection</button>
+    <div class="quiz-explain" id="q1-2-exp">② 본문 그대로 "through the lens of human knowledge" — 음식은 인간 지식이라는 렌즈를 통해 걸러진 태양 에너지라는 핵심 비유.</div>
+    <button class="reset-btn" onclick="resetQuiz(1,2)">↺ 다시풀기</button>
+  </div>
+
+  <div class="quiz-block" id="q1-3">
+    <div class="quiz-num">3번</div>
+    <div class="quiz-type">어법 오류 찾기</div>
+    <div class="quiz-question">다음 밑줄 친 부분 중 어법상 틀린 것은?</div>
+    <div class="quiz-passage"><span class="quiz-underline" onclick="selectUnderline(this,1,3,false)">①What we eat</span> is solar energy, filtered, concentrated, and distilled through the lens of human knowledge. The energy <span class="quiz-underline" onclick="selectUnderline(this,1,3,false)">②the Earth receives</span> from the sun each year has remained more or less constant. What's allowed us <span class="quiz-underline" onclick="selectUnderline(this,1,3,false)">③to flourish</span> is our increasingly sophisticated knowledge of how to capture an ever-growing but <span class="quiz-underline" onclick="selectUnderline(this,1,3,true)">④still tiny</span> fraction of that energy in a form <span class="quiz-underline" onclick="selectUnderline(this,1,3,false)">⑤that can fuel</span> our bodies.</div>
+    <div class="quiz-explain" id="q1-3-exp">④ "ever-growing but still tiny"에서 still은 부사로 형용사 tiny를 수식하는 올바른 구조이다. 오류 유형으로는 stillness(명사)나 stilly로 바꿔 출제. 본 문제에서 ④를 정답(틀린 것)으로 변형 출제 — 예: "still tiny → still tinily".</div>
+    <button class="reset-btn" onclick="resetQuiz(1,3)">↺ 다시풀기</button>
+  </div>
+
+  <div class="quiz-block" id="q1-4">
+    <div class="quiz-num">4번</div>
+    <div class="quiz-type">내용 불일치</div>
+    <div class="quiz-question">다음 글의 내용과 일치하지 않는 것은?</div>
+    <button class="choice-btn" onclick="selectChoice(this,7,2,'오늘날 우리가 먹는 음식은 수천 년간의 농업 지식의 결실이다.')">① 오늘날 우리가 먹는 음식은 수천 년간의 농업 지식의 결실이다.</button>
+    <button class="choice-btn" onclick="selectChoice(this,7,2,'우리가 먹는 것은 인간 지식을 통해 걸러진 태양 에너지이다.')">② 우리가 먹는 것은 인간 지식을 통해 걸러진 태양 에너지이다.</button>
+    <button class="choice-btn" onclick="selectChoice(this,7,2,'지구가 받는 태양 에너지의 총량은 인류 문명이 발전함에 따라 점점 증가해 왔다.')">③ 지구가 받는 태양 에너지의 총량은 인류 문명이 발전함에 따라 점점 증가해 왔다.</button>
+    <button class="choice-btn" onclick="selectChoice(this,7,2,'인류가 번성할 수 있었던 것은 정교한 지식 덕분이다.')">④ 인류가 번성할 수 있었던 것은 정교한 지식 덕분이다.</button>
+    <button class="choice-btn" onclick="selectChoice(this,7,2,'지식의 발전은 활용 가능한 에너지 양의 증가를 가져왔다.')">⑤ 지식의 발전은 활용 가능한 에너지 양의 증가를 가져왔다.</button>
+    <div class="quiz-explain" id="q1-4-exp">③ 본문은 "The energy the Earth receives from the sun each year has remained <b>more or less constant</b>"라고 했다. 태양 에너지 총량은 일정하게 유지되어 왔으며, 증가한 것은 총량이 아니라 인간이 활용하는 양이다.</div>
+    <button class="reset-btn" onclick="resetQuiz(1,4)">↺ 다시풀기</button>
+  </div>
+
+  <div class="quiz-block" id="q1-5">
+    <div class="quiz-num">5번</div>
+    <div class="quiz-type">글의 순서 배열</div>
+    <div class="quiz-question">주어진 글 다음에 이어질 글의 순서로 가장 적절한 것은?</div>
+    <div class="quiz-passage">There's a saying that "you can't eat information." That may be so, but the food we eat today is the fruit of thousands of years of increasingly high-quality information.</div>
+    <div class="quiz-passage"><b>(A)</b> The energy the Earth receives from the sun each year has remained more or less constant through all of human civilization. What's allowed us to flourish is our increasingly sophisticated knowledge of how to capture an ever-growing but still tiny fraction of that energy in a form that can fuel our bodies.<br><b>(B)</b> Every step in the advancement of our knowledge has brought with it an increase in the amount of energy we can tap into.<br><b>(C)</b> What we eat is solar energy, filtered, concentrated, and distilled through the lens of human knowledge.</div>
+    <button class="choice-btn" onclick="selectChoice(this,8,2,'(A)-(B)-(C)')">① (A)-(B)-(C)</button>
+    <button class="choice-btn" onclick="selectChoice(this,8,2,'(B)-(C)-(A)')">② (B)-(C)-(A)</button>
+    <button class="choice-btn" onclick="selectChoice(this,8,2,'(C)-(A)-(B)')">③ (C)-(A)-(B)</button>
+    <button class="choice-btn" onclick="selectChoice(this,8,2,'(A)-(C)-(B)')">④ (A)-(C)-(B)</button>
+    <button class="choice-btn" onclick="selectChoice(this,8,2,'(C)-(B)-(A)')">⑤ (C)-(B)-(A)</button>
+    <div class="quiz-explain" id="q1-5-exp">③ C(음식 = 지식 렌즈로 걸러진 태양 에너지) → A(태양 에너지 총량은 일정, 지식이 활용량 결정) → B(지식 발전 = 에너지 활용량 증가 결론) 순서가 논리적이다.</div>
+    <button class="reset-btn" onclick="resetQuiz(1,5)">↺ 다시풀기</button>
+  </div>
+
+  <div class="essay-block">
+    <div class="essay-label">[서술형 1] 빈칸 요약</div>
+    <div class="essay-condition">조건: 본문에서 알맞은 단어를 찾아 쓰시오.</div>
+    <div class="essay-question">The food we eat is solar energy __________ through the lens of human knowledge, and every step in the advancement of knowledge has brought an increase in the energy we can __________ into.</div>
+    <textarea class="essay-textarea" placeholder="답안을 작성하세요..."></textarea>
+    <button class="toggle-ans-btn" onclick="toggleAns(this)">모범답안 보기</button>
+    <div class="model-answer">distilled (또는 filtered / concentrated) / tap</div>
+  </div>
+
+  <div class="essay-block">
+    <div class="essay-label">[서술형 2] 내용 서술</div>
+    <div class="essay-condition">조건: 완전한 영어 문장으로, 30단어 내외로 쓰시오.</div>
+    <div class="essay-question">지구가 받는 태양 에너지의 총량과 인류 번성의 관계를 설명하시오.</div>
+    <textarea class="essay-textarea" placeholder="답안을 작성하세요..."></textarea>
+    <button class="toggle-ans-btn" onclick="toggleAns(this)">모범답안 보기</button>
+    <div class="model-answer">Although the energy the Earth receives from the sun has remained constant, what allowed humans to flourish is their increasingly sophisticated knowledge of how to capture a growing fraction of that energy.</div>
+  </div>
+</div>
+
+<!-- TAB 6: 정답지 -->
+<div class="tab-panel" id="p1-t6">
+  <div class="section-title">정답 및 해설</div>
+  <div class="ans-row"><span class="ans-num">1</span><span class="ans-val">③</span><span class="ans-explain">음식과 에너지 모두 태양에서 오지만 그것을 활용하는 열쇠는 인간의 정교한 지식임을 강조한다.</span></div>
+  <div class="ans-row"><span class="ans-num">2</span><span class="ans-val">②</span><span class="ans-explain">human knowledge — 음식은 인간 지식이라는 렌즈로 걸러진 태양 에너지라는 핵심 비유.</span></div>
+  <div class="ans-row"><span class="ans-num">3</span><span class="ans-val">④</span><span class="ans-explain">still은 부사로 형용사 수식이 맞으나, 변형 출제 시 부사→형용사 혼동 오류로 출제.</span></div>
+  <div class="ans-row"><span class="ans-num">4</span><span class="ans-val">③</span><span class="ans-explain">태양 에너지 총량은 '일정(constant)'하게 유지되어 왔다. 증가한 것은 인간의 활용량이다.</span></div>
+  <div class="ans-row"><span class="ans-num">5</span><span class="ans-val">③</span><span class="ans-explain">C(음식=태양에너지) → A(총량 일정, 지식이 활용량 결정) → B(지식발전=에너지 증가) 순서.</span></div>
+  <div class="ans-essay">
+    <div class="ans-essay-label">[서술형 1] 모범답안</div>
+    <div class="ans-essay-content">distilled (또는 filtered / concentrated) / tap</div>
+  </div>
+  <div class="ans-essay">
+    <div class="ans-essay-label">[서술형 2] 모범답안</div>
+    <div class="ans-essay-content">Although the energy the Earth receives from the sun has remained constant, what allowed humans to flourish is their increasingly sophisticated knowledge of how to capture a growing fraction of that energy.</div>
+  </div>
+</div>
+
+</div><!-- end panel-1 -->
+
+<!-- PASSAGE 2: Journalism Belongs to the People -->
+<div class="passage-panel" id="panel-2">
+
+<!-- TAB 0: 전문 -->
+<div class="tab-panel active" id="p2-t0">
+  <div class="section-title">전문 <span class="section-subtitle">지문 2 · Journalism Belongs to the People</span></div>
+  <div class="full-text-box">
+    <p>Increased community engagement by professional journalists, on their own, will not solve the problem of making the news more relevant to everyone because traditional news organizations already have abandoned many communities, leaving behind news deserts. In those places, citizens must take up the responsibility for discovering information, holding the powerful accountable, and telling the news for themselves and their neighbors. The democratization of information — through the disruptions caused by computers and the internet — allows citizens to retake control of local news in ways that never have existed before, and it calls them to take greater care in the gathering and dissemination of what they discover or think they know. Journalism, perhaps like never before, belongs to the people rather than to professional journalists, wealthy publishers, or even corporate shareholders. The same technology that has shifted the balance of power toward the people gives them the tools to act as broadcasters and publishers of information essential to their immediate community — and, more critically, to serve as gatekeepers to information for other people around them.</p>
+  </div>
+</div>
+
+<!-- TAB 1: 문장분석 -->
+<div class="tab-panel" id="p2-t1">
+  <div class="section-title">문장분석</div>
+
+  <div class="sent-block">
+    <div class="sent-num">① </div>
+    <div class="sent-en">Increased community engagement by professional journalists, on their own, will not solve the problem of making the news more relevant to everyone because traditional news organizations already have abandoned many communities, leaving behind news deserts.</div>
+    <div class="sent-slash">Increased community engagement by professional journalists, / on their own, / will not solve the problem / of making the news more relevant to everyone / because traditional news organizations / already have abandoned many communities, / leaving behind news deserts.</div>
+    <div class="sent-ko">전문 기자들에 의한 지역 사회 참여 증가는, / 그것만으로는, / 문제를 해결하지 못할 것이다 / 모든 이에게 뉴스를 더 관련성 있게 만드는 / 왜냐하면 전통적인 뉴스 기관들이 / 이미 많은 지역 사회를 떠났고, / 뉴스 공백(news deserts)을 남겼기 때문이다.</div>
+    <div class="gram-item"><span class="gram-name">◆ 동명사 주어 (of making)</span><br><span class="gram-ex">▶ the problem <u>of making</u> the news more relevant</span><br><span class="gram-tip">★ the problem of + 동명사 구조. make + 목적어 + 형용사 5형식 내포.</span></div>
+    <div class="gram-item"><span class="gram-name">◆ 분사구문 (leaving behind)</span><br><span class="gram-ex">▶ have abandoned many communities, <u>leaving behind</u> news deserts</span><br><span class="gram-tip">★ 결과를 나타내는 분사구문. = and left behind news deserts로 환원 가능.</span></div>
+    <div class="gram-item"><span class="gram-name">◆ 현재완료 have abandoned</span><br><span class="gram-ex">▶ traditional news organizations already <u>have abandoned</u> many communities</span><br><span class="gram-tip">★ already와 함께 쓰인 현재완료 완료 용법. 과거와의 구별 출제.</span></div>
+  </div>
+
+  <div class="sent-block">
+    <div class="sent-num">② </div>
+    <div class="sent-en">In those places, citizens must take up the responsibility for discovering information, holding the powerful accountable, and telling the news for themselves and their neighbors.</div>
+    <div class="sent-slash">In those places, / citizens must take up the responsibility / for discovering information, / holding the powerful accountable, / and telling the news for themselves and their neighbors.</div>
+    <div class="sent-ko">그런 곳에서는, / 시민들이 책임을 떠맡아야 한다 / 정보를 발굴하고, / 권력자들에게 책임을 묻고, / 자신과 이웃을 위한 뉴스를 전달하는.</div>
+    <div class="gram-item"><span class="gram-name">◆ 동명사 병렬 (discovering / holding / telling)</span><br><span class="gram-ex">▶ the responsibility for <u>discovering</u> ~, <u>holding</u> ~, and <u>telling</u> ~</span><br><span class="gram-tip">★ 전치사 for의 목적어로 동명사 3개 병렬. 형태 일치 확인 출제.</span></div>
+    <div class="gram-item"><span class="gram-name">◆ hold + 목적어 + accountable</span><br><span class="gram-ex">▶ holding the powerful <u>accountable</u></span><br><span class="gram-tip">★ 5형식 구조. hold + O + 형용사. '~에게 책임을 지우다'.</span></div>
+  </div>
+
+  <div class="sent-block">
+    <div class="sent-num">③ </div>
+    <div class="sent-en">The democratization of information — through the disruptions caused by computers and the internet — allows citizens to retake control of local news in ways that never have existed before, and it calls them to take greater care in the gathering and dissemination of what they discover or think they know.</div>
+    <div class="sent-slash">The democratization of information / — through the disruptions caused by computers and the internet — / allows citizens to retake control of local news / in ways that never have existed before, / and it calls them / to take greater care / in the gathering and dissemination / of what they discover or think they know.</div>
+    <div class="sent-ko">정보의 민주화는 / — 컴퓨터와 인터넷으로 인한 혼란을 통해 — / 시민들이 지역 뉴스의 통제권을 되찾도록 허용하며 / 이전에는 존재하지 않았던 방식으로, / 그리고 이는 그들에게 요구한다 / 더 큰 주의를 기울일 것을 / 수집과 전파에서 / 그들이 발견하거나 안다고 생각하는 것의.</div>
+    <div class="gram-item"><span class="gram-name">◆ allow + O + to부정사 (5형식)</span><br><span class="gram-ex">▶ <u>allows citizens to retake</u> control</span><br><span class="gram-tip">★ allow + 목적어 + to-v 구조. to부정사 생략·변형 출제.</span></div>
+    <div class="gram-item"><span class="gram-name">◆ 관계대명사 what (선행사 포함)</span><br><span class="gram-ex">▶ dissemination of <u>what</u> they discover or think they know</span><br><span class="gram-tip">★ what = the thing(s) that. 선행사 없이 명사절 이끔. that과 혼동 주의.</span></div>
+    <div class="gram-item"><span class="gram-name">◆ 관계대명사 that + 현재완료</span><br><span class="gram-ex">▶ in ways <u>that never have existed</u> before</span><br><span class="gram-tip">★ that이 이끄는 관계절에서 현재완료 사용. never + 현재완료 부정 강조.</span></div>
+  </div>
+
+  <div class="sent-block">
+    <div class="sent-num">④ </div>
+    <div class="sent-en">Journalism, perhaps like never before, belongs to the people rather than to professional journalists, wealthy publishers, or even corporate shareholders.</div>
+    <div class="sent-slash">Journalism, / perhaps like never before, / belongs to the people / rather than to professional journalists, wealthy publishers, or even corporate shareholders.</div>
+    <div class="sent-ko">저널리즘은, / 아마도 그 어느 때보다도, / 사람들에게 속한다 / 전문 기자, 부유한 출판업자, 혹은 기업 주주보다.</div>
+    <div class="gram-item"><span class="gram-name">◆ A rather than B (대조 비교)</span><br><span class="gram-ex">▶ belongs to the people <u>rather than to</u> professional journalists</span><br><span class="gram-tip">★ 'B가 아닌 A'의 대조 강조. rather than 앞뒤 형태 병렬 확인.</span></div>
+  </div>
+
+  <div class="sent-block">
+    <div class="sent-num">⑤ </div>
+    <div class="sent-en">The same technology that has shifted the balance of power toward the people gives them the tools to act as broadcasters and publishers of information essential to their immediate community — and, more critically, to serve as gatekeepers to information for other people around them.</div>
+    <div class="sent-slash">The same technology / that has shifted the balance of power toward the people / gives them the tools / to act as broadcasters and publishers / of information essential to their immediate community / — and, more critically, / to serve as gatekeepers to information / for other people around them.</div>
+    <div class="sent-ko">권력의 균형을 사람들 쪽으로 이동시킨 / 바로 그 기술은 / 그들에게 도구를 제공한다 / 방송인과 출판인으로 행동할 / 자신의 지역 사회에 필수적인 정보의 / — 그리고, 더 중요하게는, / 정보의 문지기로 역할할 / 주변의 다른 사람들을 위한.</div>
+    <div class="gram-item"><span class="gram-name">◆ 관계대명사 that (주격) + 현재완료</span><br><span class="gram-ex">▶ The same technology <u>that has shifted</u> the balance of power</span><br><span class="gram-tip">★ The same ~ that 강조 구조. 주격 관계대명사 that이 현재완료 동사를 이끎.</span></div>
+    <div class="gram-item"><span class="gram-name">◆ to부정사 병렬 (to act / to serve)</span><br><span class="gram-ex">▶ the tools <u>to act</u> as broadcasters ~ and <u>to serve</u> as gatekeepers</span><br><span class="gram-tip">★ tools를 수식하는 to부정사 형용사적 용법 병렬. and로 연결.</span></div>
+    <div class="gram-item"><span class="gram-name">◆ 4형식 give + 간접목적어 + 직접목적어</span><br><span class="gram-ex">▶ <u>gives them the tools</u></span><br><span class="gram-tip">★ give + IO(them) + DO(the tools) 4형식. = gives the tools to them으로 전환 가능.</span></div>
+  </div>
+</div>
+
+<!-- TAB 2: 핵심단어 -->
+<div class="tab-panel" id="p2-t2">
+  <div class="section-title">핵심단어</div>
+  <div class="vocab-item"><span class="vocab-word">engagement</span><span class="vocab-meaning">참여, 관여</span><span class="vocab-pos">n.</span><span class="vocab-deriv">engage (v.), engaged (adj.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">relevant</span><span class="vocab-meaning">관련된, 적절한</span><span class="vocab-pos">adj.</span><span class="vocab-deriv">relevance (n.), irrelevant (adj.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">abandon</span><span class="vocab-meaning">버리다, 포기하다</span><span class="vocab-pos">v.</span><span class="vocab-deriv">abandonment (n.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">accountable</span><span class="vocab-meaning">책임이 있는</span><span class="vocab-pos">adj.</span><span class="vocab-deriv">accountability (n.), account (v./n.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">democratization</span><span class="vocab-meaning">민주화</span><span class="vocab-pos">n.</span><span class="vocab-deriv">democratize (v.), democracy (n.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">disruption</span><span class="vocab-meaning">혼란, 붕괴</span><span class="vocab-pos">n.</span><span class="vocab-deriv">disrupt (v.), disruptive (adj.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">dissemination</span><span class="vocab-meaning">전파, 보급</span><span class="vocab-pos">n.</span><span class="vocab-deriv">disseminate (v.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">publisher</span><span class="vocab-meaning">출판업자, 발행인</span><span class="vocab-pos">n.</span><span class="vocab-deriv">publish (v.), publication (n.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">shareholder</span><span class="vocab-meaning">주주</span><span class="vocab-pos">n.</span><span class="vocab-deriv">share (n./v.), stockholder (n.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">gatekeeper</span><span class="vocab-meaning">문지기, 정보 통제자</span><span class="vocab-pos">n.</span><span class="vocab-deriv">—</span></div>
+  <div class="vocab-item"><span class="vocab-word">broadcaster</span><span class="vocab-meaning">방송인</span><span class="vocab-pos">n.</span><span class="vocab-deriv">broadcast (v./n.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">retake</span><span class="vocab-meaning">되찾다, 탈환하다</span><span class="vocab-pos">v.</span><span class="vocab-deriv">take (v.), reclaim (v.)</span></div>
+</div>
+
+<!-- TAB 3: 전문해석 -->
+<div class="tab-panel" id="p2-t3">
+  <div class="section-title">전문해석</div>
+  <div class="trans-box">
+    전문 기자들에 의한 지역 사회 참여 증가만으로는, 뉴스를 모두에게 더 관련성 있게 만드는 문제를 해결할 수 없다. 전통적인 뉴스 기관들이 이미 많은 지역 사회를 떠나 '뉴스 사막(news deserts)'을 남겨 두었기 때문이다. 그런 곳에서 시민들은 정보를 발굴하고, 권력자들에게 책임을 묻고, 자신과 이웃을 위한 뉴스를 전달하는 책임을 스스로 떠맡아야 한다. 컴퓨터와 인터넷이 초래한 혼란을 통한 정보의 민주화는 시민들이 이전에는 존재하지 않았던 방식으로 지역 뉴스의 통제권을 되찾도록 허용하며, 그들이 발견하거나 안다고 생각하는 것을 수집하고 전파하는 데 더 큰 주의를 기울이도록 요구한다. 저널리즘은 어쩌면 그 어느 때보다도, 전문 기자나 부유한 출판업자, 심지어 기업 주주가 아닌 사람들에게 속하게 되었다. 권력의 균형을 사람들 쪽으로 이동시킨 바로 그 기술이 그들에게 자신의 지역 사회에 필수적인 정보의 방송인과 출판인으로 활동할 도구를 제공하며, 더 중요하게는 주변 사람들을 위한 정보의 문지기 역할도 할 수 있게 한다.
+  </div>
+</div>
+
+<!-- TAB 4: 주제·요지 -->
+<div class="tab-panel" id="p2-t4">
+  <div class="section-title">주제·요지·구조</div>
+  <div class="topic-box">
+    <div class="topic-label">주제</div>
+    <div class="topic-content">디지털 기술이 가능하게 한 저널리즘의 민주화와 시민의 역할 확대</div>
+  </div>
+  <div class="topic-box">
+    <div class="topic-label">요지</div>
+    <div class="topic-content">전통 뉴스 기관이 떠난 자리를 시민이 채워야 하며, 인터넷과 컴퓨터가 시민들에게 정보 수집·전파·통제의 도구를 제공함으로써 저널리즘이 사람들의 것이 되었다.</div>
+  </div>
+  <div class="topic-box">
+    <div class="topic-label">구조 흐름</div>
+    <div class="structure-step"><span class="step-badge">문제 제기</span><span class="step-text">전통 뉴스 기관의 지역 사회 이탈 → 뉴스 사막 형성</span></div>
+    <div class="structure-step"><span class="step-badge">전개</span><span class="step-text">시민이 책임 떠맡아야 함 — 정보 발굴, 권력 감시, 뉴스 전달</span></div>
+    <div class="structure-step"><span class="step-badge">전환</span><span class="step-text">정보 민주화 → 시민이 지역 뉴스 통제권 회복 가능</span></div>
+    <div class="structure-step"><span class="step-badge">결론</span><span class="step-text">기술이 시민에게 방송·출판·문지기 역할의 도구 제공 → 저널리즘은 사람의 것</span></div>
+  </div>
+</div>
+
+<!-- TAB 5: 변형문제 -->
+<div class="tab-panel" id="p2-t5">
+  <div class="section-title">변형문제</div>
+
+  <div class="quiz-block" id="q2-1">
+    <div class="quiz-num">1번</div>
+    <div class="quiz-type">주제 추론</div>
+    <div class="quiz-question">다음 글의 주제로 가장 적절한 것은?</div>
+    <div class="quiz-passage">Journalism, perhaps like never before, belongs to the people rather than to professional journalists, wealthy publishers, or even corporate shareholders. The same technology that has shifted the balance of power toward the people gives them the tools to act as broadcasters and publishers...</div>
+    <button class="choice-btn" onclick="selectChoice(this,9,2,'전통 뉴스 기관의 수익 모델 변화와 생존 전략')">① 전통 뉴스 기관의 수익 모델 변화와 생존 전략</button>
+    <button class="choice-btn" onclick="selectChoice(this,9,2,'디지털 기술이 저널리즘을 시민의 영역으로 확장한 과정')">② 디지털 기술이 저널리즘을 시민의 영역으로 확장한 과정</button>
+    <button class="choice-btn" onclick="selectChoice(this,9,2,'전문 기자가 지역 사회 뉴스를 책임져야 하는 이유')">③ 전문 기자가 지역 사회 뉴스를 책임져야 하는 이유</button>
+    <button class="choice-btn" onclick="selectChoice(this,9,2,'소셜 미디어가 허위 정보 확산에 미치는 부정적 영향')">④ 소셜 미디어가 허위 정보 확산에 미치는 부정적 영향</button>
+    <button class="choice-btn" onclick="selectChoice(this,9,2,'언론 자유를 위한 법적·제도적 보호 장치의 필요성')">⑤ 언론 자유를 위한 법적·제도적 보호 장치의 필요성</button>
+    <div class="quiz-explain" id="q2-1-exp">② 글 전체가 디지털 기술로 인해 저널리즘이 시민의 역할로 이동하는 과정을 설명하고 있다.</div>
+    <button class="reset-btn" onclick="resetQuiz(2,1)">↺ 다시풀기</button>
+  </div>
+
+  <div class="quiz-block" id="q2-2">
+    <div class="quiz-num">2번</div>
+    <div class="quiz-type">빈칸 추론</div>
+    <div class="quiz-question">다음 빈칸에 들어갈 말로 가장 적절한 것은?</div>
+    <div class="quiz-passage">The democratization of information — through the disruptions caused by computers and the internet — allows citizens to retake control of local news in ways that never have existed before, and it calls them to take greater care in the gathering and __________ of what they discover or think they know.</div>
+    <button class="choice-btn" onclick="selectChoice(this,10,1,'regulation')">① regulation</button>
+    <button class="choice-btn" onclick="selectChoice(this,10,1,'dissemination')">② dissemination</button>
+    <button class="choice-btn" onclick="selectChoice(this,10,1,'publication')">③ publication</button>
+    <button class="choice-btn" onclick="selectChoice(this,10,1,'collection')">④ collection</button>
+    <button class="choice-btn" onclick="selectChoice(this,10,1,'verification')">⑤ verification</button>
+    <div class="quiz-explain" id="q2-2-exp">② 본문의 the gathering and dissemination이 그대로 출제된 것. '수집과 전파'의 쌍이 문맥에 부합한다.</div>
+    <button class="reset-btn" onclick="resetQuiz(2,2)">↺ 다시풀기</button>
+  </div>
+
+  <div class="quiz-block" id="q2-3">
+    <div class="quiz-num">3번</div>
+    <div class="quiz-type">어법 오류 찾기</div>
+    <div class="quiz-question">다음 밑줄 친 부분 중 어법상 틀린 것은?</div>
+    <div class="quiz-passage">In those places, citizens must take up the responsibility for <span class="quiz-underline" onclick="selectUnderline(this,2,3,false)">①discovering</span> information, <span class="quiz-underline" onclick="selectUnderline(this,2,3,false)">②holding</span> the powerful accountable, and <span class="quiz-underline" onclick="selectUnderline(this,2,3,false)">③telling</span> the news for themselves and their neighbors. The democratization of information allows citizens <span class="quiz-underline" onclick="selectUnderline(this,2,3,true)">④to retaking</span> control of local news in ways that never have <span class="quiz-underline" onclick="selectUnderline(this,2,3,false)">⑤existed</span> before.</div>
+    <div class="quiz-explain" id="q2-3-exp">④ allow + 목적어 + to부정사(동사원형) 구조이므로 to retaking이 아닌 to retake가 맞다.</div>
+    <button class="reset-btn" onclick="resetQuiz(2,3)">↺ 다시풀기</button>
+  </div>
+
+  <div class="quiz-block" id="q2-4">
+    <div class="quiz-num">4번</div>
+    <div class="quiz-type">내용 불일치</div>
+    <div class="quiz-question">다음 글의 내용과 일치하지 않는 것은?</div>
+    <button class="choice-btn" onclick="selectChoice(this,11,3,'전통 뉴스 기관들이 많은 지역 사회를 이미 떠났다.')">① 전통 뉴스 기관들이 많은 지역 사회를 이미 떠났다.</button>
+    <button class="choice-btn" onclick="selectChoice(this,11,3,'시민들은 정보 수집과 전파에 더 큰 주의를 기울여야 한다.')">② 시민들은 정보 수집과 전파에 더 큰 주의를 기울여야 한다.</button>
+    <button class="choice-btn" onclick="selectChoice(this,11,3,'디지털 기술은 권력의 균형을 전통 뉴스 기관 쪽으로 이동시켰다.')">③ 디지털 기술은 권력의 균형을 전통 뉴스 기관 쪽으로 이동시켰다.</button>
+    <button class="choice-btn" onclick="selectChoice(this,11,3,'전문 기자들만의 노력으로는 지역 사회 뉴스 문제를 해결할 수 없다.')">④ 전문 기자들만의 노력으로는 지역 사회 뉴스 문제를 해결할 수 없다.</button>
+    <button class="choice-btn" onclick="selectChoice(this,11,3,'시민들은 지역 사회 정보의 문지기 역할도 할 수 있다.')">⑤ 시민들은 지역 사회 정보의 문지기 역할도 할 수 있다.</button>
+    <div class="quiz-explain" id="q2-4-exp">③ 본문은 기술이 권력의 균형을 '사람들(the people)' 쪽으로 이동시켰다고 명시한다. 전통 뉴스 기관 쪽이 아님.</div>
+    <button class="reset-btn" onclick="resetQuiz(2,4)">↺ 다시풀기</button>
+  </div>
+
+  <div class="quiz-block" id="q2-5">
+    <div class="quiz-num">5번</div>
+    <div class="quiz-type">글의 순서 배열</div>
+    <div class="quiz-question">주어진 글 다음에 이어질 글의 순서로 가장 적절한 것은?</div>
+    <div class="quiz-passage">Increased community engagement by professional journalists, on their own, will not solve the problem of making the news more relevant to everyone because traditional news organizations already have abandoned many communities, leaving behind news deserts.</div>
+    <div class="quiz-passage"><b>(A)</b> The democratization of information — through the disruptions caused by computers and the internet — allows citizens to retake control of local news in ways that never have existed before, and it calls them to take greater care in the gathering and dissemination of what they discover or think they know.<br><b>(B)</b> The same technology that has shifted the balance of power toward the people gives them the tools to act as broadcasters and publishers of information essential to their immediate community — and, more critically, to serve as gatekeepers to information for other people around them.<br><b>(C)</b> In those places, citizens must take up the responsibility for discovering information, holding the powerful accountable, and telling the news for themselves and their neighbors.</div>
+    <button class="choice-btn" onclick="selectChoice(this,12,2,'(A)-(B)-(C)')">① (A)-(B)-(C)</button>
+    <button class="choice-btn" onclick="selectChoice(this,12,2,'(A)-(C)-(B)')">② (A)-(C)-(B)</button>
+    <button class="choice-btn" onclick="selectChoice(this,12,2,'(C)-(A)-(B)')">③ (C)-(A)-(B)</button>
+    <button class="choice-btn" onclick="selectChoice(this,12,2,'(B)-(C)-(A)')">④ (B)-(C)-(A)</button>
+    <button class="choice-btn" onclick="selectChoice(this,12,2,'(C)-(B)-(A)')">⑤ (C)-(B)-(A)</button>
+    <div class="quiz-explain" id="q2-5-exp">③ C(시민의 책임) → A(정보 민주화로 시민 통제권 회복) → B(기술이 도구 제공, 문지기 역할)의 흐름이 논리적이다.</div>
+    <button class="reset-btn" onclick="resetQuiz(2,5)">↺ 다시풀기</button>
+  </div>
+
+  <div class="essay-block">
+    <div class="essay-label">[서술형 1] 빈칸 요약</div>
+    <div class="essay-condition">조건: 본문에서 알맞은 단어를 찾아 쓰시오.</div>
+    <div class="essay-question">Because traditional news organizations have left many communities behind, citizens must now act as __________ and __________ of local information, using the same technology that shifted power toward the people.</div>
+    <textarea class="essay-textarea" placeholder="답안을 작성하세요..."></textarea>
+    <button class="toggle-ans-btn" onclick="toggleAns(this)">모범답안 보기</button>
+    <div class="model-answer">broadcasters / publishers (또는 gatekeepers)</div>
+  </div>
+
+  <div class="essay-block">
+    <div class="essay-label">[서술형 2] 내용 서술</div>
+    <div class="essay-condition">조건: 완전한 영어 문장으로, 30단어 내외로 쓰시오.</div>
+    <div class="essay-question">'뉴스 사막(news deserts)'이 생겨난 이유와 그것이 시민에게 미치는 영향을 설명하시오.</div>
+    <textarea class="essay-textarea" placeholder="답안을 작성하세요..."></textarea>
+    <button class="toggle-ans-btn" onclick="toggleAns(this)">모범답안 보기</button>
+    <div class="model-answer">News deserts have formed because traditional news organizations have abandoned many communities. As a result, citizens in those places must take up the responsibility for discovering and sharing information themselves.</div>
+  </div>
+</div>
+
+<!-- TAB 6: 정답지 -->
+<div class="tab-panel" id="p2-t6">
+  <div class="section-title">정답 및 해설</div>
+  <div class="ans-row"><span class="ans-num">1</span><span class="ans-val">②</span><span class="ans-explain">디지털 기술이 저널리즘을 시민의 영역으로 확장한 과정이 글의 핵심 주제이다.</span></div>
+  <div class="ans-row"><span class="ans-num">2</span><span class="ans-val">②</span><span class="ans-explain">the gathering and dissemination — '수집과 전파'가 문맥에 부합한다.</span></div>
+  <div class="ans-row"><span class="ans-num">3</span><span class="ans-val">④</span><span class="ans-explain">allow + O + to부정사(동사원형) → to retake가 맞다.</span></div>
+  <div class="ans-row"><span class="ans-num">4</span><span class="ans-val">③</span><span class="ans-explain">기술은 권력을 '사람들' 쪽으로 이동시켰다. 전통 뉴스 기관이 아님.</span></div>
+  <div class="ans-row"><span class="ans-num">5</span><span class="ans-val">③</span><span class="ans-explain">C(시민의 책임) → A(민주화로 통제권 회복) → B(기술 도구 제공) 순서.</span></div>
+  <div class="ans-essay">
+    <div class="ans-essay-label">[서술형 1] 모범답안</div>
+    <div class="ans-essay-content">broadcasters / publishers (또는 gatekeepers)</div>
+  </div>
+  <div class="ans-essay">
+    <div class="ans-essay-label">[서술형 2] 모범답안</div>
+    <div class="ans-essay-content">News deserts have formed because traditional news organizations have abandoned many communities. As a result, citizens in those places must take up the responsibility for discovering and sharing information themselves.</div>
+  </div>
+</div>
+
+</div><!-- end panel-2 -->
+<!-- PASSAGE 3: Science, Evidence, and Critical Thinking -->
+<div class="passage-panel" id="panel-3">
+
+<!-- TAB 0: 전문 -->
+<div class="tab-panel active" id="p3-t0">
+  <div class="section-title">전문 <span class="section-subtitle">지문 3 · Science, Evidence, and Critical Thinking</span></div>
+  <div class="full-text-box">
+    <p>It is a myth that all ideas are equally valid, even those with little or no objective proof. The existence of science is the commitment to objective truth. After all, science is true: fire is hot, the wheel is efficient, birds and planes can fly, we've landed on a comet and traveled to the Moon, antibiotics treat illness, and immunizations keep us from getting sick. These accomplishments are made possible by objective truths. A plausible theory can, and frequently does, push science forward. However, an intuition must be followed with testing that confirms or disproves its veracity. If a theory is disproved, one should consider it as a reason to reject or alter the hypothesis, not a justification to just keep firmly holding to the hypothesis because you are instinctively wedded to it. Critical thinking is an absolute must, and we must respect evidence. It's the only reason for anyone to trust anything about reality. Without testing and evidence, intuition is useful, but it is never the ultimate word.</p>
+  </div>
+</div>
+
+<!-- TAB 1: 문장분석 -->
+<div class="tab-panel" id="p3-t1">
+  <div class="section-title">문장분석</div>
+
+  <div class="sent-block">
+    <div class="sent-num">① </div>
+    <div class="sent-en">It is a myth that all ideas are equally valid, even those with little or no objective proof.</div>
+    <div class="sent-slash">It is a myth / that all ideas are equally valid, / even those with little or no objective proof.</div>
+    <div class="sent-ko">모든 아이디어가 똑같이 유효하다는 것은 신화이다, / 객관적 증거가 거의 없거나 전혀 없는 것들조차도.</div>
+    <div class="gram-item"><span class="gram-name">◆ 가주어 It ~ 진주어 that절</span><br><span class="gram-ex">▶ <u>It</u> is a myth <u>that</u> all ideas are equally valid</span><br><span class="gram-tip">★ 형식상 주어 It + 진주어 that절. that절을 주어로 쓰면 문장이 무거워지므로 가주어 사용.</span></div>
+    <div class="gram-item"><span class="gram-name">◆ 동격 that (myth = that절)</span><br><span class="gram-ex">▶ a myth <u>that</u> all ideas are equally valid</span><br><span class="gram-tip">★ myth, fact, idea 등 추상명사 뒤의 that절은 동격. 관계대명사 that과 구별.</span></div>
+  </div>
+
+  <div class="sent-block">
+    <div class="sent-num">② </div>
+    <div class="sent-en">The existence of science is the commitment to objective truth.</div>
+    <div class="sent-slash">The existence of science / is the commitment / to objective truth.</div>
+    <div class="sent-ko">과학의 존재는 / 헌신이다 / 객관적 진리에 대한.</div>
+    <div class="gram-item"><span class="gram-name">◆ be committed to + 명사 (헌신/전념)</span><br><span class="gram-ex">▶ the commitment <u>to</u> objective truth</span><br><span class="gram-tip">★ commitment to + 명사. to 다음 명사/동명사. the existence of = '~의 존재'.</span></div>
+  </div>
+
+  <div class="sent-block">
+    <div class="sent-num">③ </div>
+    <div class="sent-en">After all, science is true: fire is hot, the wheel is efficient, birds and planes can fly, we've landed on a comet and traveled to the Moon, antibiotics treat illness, and immunizations keep us from getting sick.</div>
+    <div class="sent-slash">After all, science is true: / fire is hot, / the wheel is efficient, / birds and planes can fly, / we've landed on a comet and traveled to the Moon, / antibiotics treat illness, / and immunizations keep us from getting sick.</div>
+    <div class="sent-ko">결국, 과학은 사실이다: / 불은 뜨겁고, / 바퀴는 효율적이며, / 새와 비행기는 날 수 있고, / 우리는 혜성에 착륙하고 달에 다녀왔으며, / 항생제는 병을 치료하고, / 예방접종은 우리가 병에 걸리지 않도록 한다.</div>
+    <div class="gram-item"><span class="gram-name">◆ keep + 목적어 + from + 동명사</span><br><span class="gram-ex">▶ immunizations <u>keep us from getting</u> sick</span><br><span class="gram-tip">★ '~가 …하지 못하도록 막다'. prevent A from -ing와 동일 구조.</span></div>
+    <div class="gram-item"><span class="gram-name">◆ 콜론(:)을 이용한 예시 열거</span><br><span class="gram-ex">▶ science is true: fire is hot, the wheel is efficient...</span><br><span class="gram-tip">★ 콜론 이후 앞 주장의 구체적 사례 나열. 수능 독해 구조 파악 문제 출제.</span></div>
+  </div>
+
+  <div class="sent-block">
+    <div class="sent-num">④ </div>
+    <div class="sent-en">These accomplishments are made possible by objective truths.</div>
+    <div class="sent-slash">These accomplishments / are made possible / by objective truths.</div>
+    <div class="sent-ko">이러한 성취들은 / 가능하게 된다 / 객관적 진리에 의해.</div>
+    <div class="gram-item"><span class="gram-name">◆ be made possible by (수동태 + 형용사 보어)</span><br><span class="gram-ex">▶ accomplishments <u>are made possible by</u> objective truths</span><br><span class="gram-tip">★ make + O + possible → be made possible by. 5형식 수동 전환.</span></div>
+  </div>
+
+  <div class="sent-block">
+    <div class="sent-num">⑤ </div>
+    <div class="sent-en">A plausible theory can, and frequently does, push science forward.</div>
+    <div class="sent-slash">A plausible theory / can, and frequently does, / push science forward.</div>
+    <div class="sent-ko">그럴듯한 이론은 / 그럴 수 있고, 실제로 자주 / 과학을 앞으로 밀어낼 수 있다.</div>
+    <div class="gram-item"><span class="gram-name">◆ 조동사 강조 (does 삽입)</span><br><span class="gram-ex">▶ can, <u>and frequently does</u>, push science forward</span><br><span class="gram-tip">★ 'does'로 동사를 강조하는 구조. push는 원형 반복 생략. 어법 문제 출제.</span></div>
+  </div>
+
+  <div class="sent-block">
+    <div class="sent-num">⑥ </div>
+    <div class="sent-en">However, an intuition must be followed with testing that confirms or disproves its veracity.</div>
+    <div class="sent-slash">However, / an intuition / must be followed with testing / that confirms or disproves its veracity.</div>
+    <div class="sent-ko">그러나, / 직관은 / 검증이 뒤따라야 한다 / 그 타당성을 확인하거나 반증하는.</div>
+    <div class="gram-item"><span class="gram-name">◆ must be followed with (수동태 + 의무)</span><br><span class="gram-ex">▶ an intuition <u>must be followed with</u> testing</span><br><span class="gram-tip">★ follow A with B(A 다음에 B를 따르게 하다)의 수동. 조동사 + 수동태 형태.</span></div>
+    <div class="gram-item"><span class="gram-name">◆ 관계대명사 that (주격)</span><br><span class="gram-ex">▶ testing <u>that confirms or disproves</u> its veracity</span><br><span class="gram-tip">★ testing을 선행사로 하는 주격 관계대명사. confirms와 disproves 병렬.</span></div>
+  </div>
+
+  <div class="sent-block">
+    <div class="sent-num">⑦ </div>
+    <div class="sent-en">If a theory is disproved, one should consider it as a reason to reject or alter the hypothesis, not a justification to just keep firmly holding to the hypothesis because you are instinctively wedded to it.</div>
+    <div class="sent-slash">If a theory is disproved, / one should consider it / as a reason to reject or alter the hypothesis, / not a justification / to just keep firmly holding to the hypothesis / because you are instinctively wedded to it.</div>
+    <div class="sent-ko">이론이 반증된다면, / 사람은 그것을 여겨야 한다 / 가설을 기각하거나 수정할 이유로, / 정당화가 아니라 / 그저 가설을 굳게 고수하는 / 당신이 본능적으로 그것에 매여 있기 때문이라는.</div>
+    <div class="gram-item"><span class="gram-name">◆ consider A as B (A를 B로 여기다)</span><br><span class="gram-ex">▶ <u>consider it as</u> a reason to reject or alter</span><br><span class="gram-tip">★ consider + O + as + 명사. as 없이 consider A B도 가능(5형식).</span></div>
+    <div class="gram-item"><span class="gram-name">◆ 조건 부사절 if</span><br><span class="gram-ex">▶ <u>If</u> a theory is disproved, one should consider</span><span class="gram-tip">★ 조건절의 수동태 is disproved. 주절에 조동사 should 사용.</span></div>
+    <div class="gram-item"><span class="gram-name">◆ A, not B (대조 강조)</span><br><span class="gram-ex">▶ as a reason ~, <u>not</u> a justification ~</span><br><span class="gram-tip">★ 'B가 아니라 A'로 대조. not 앞의 내용이 필자의 주장.</span></div>
+  </div>
+
+  <div class="sent-block">
+    <div class="sent-num">⑧ </div>
+    <div class="sent-en">Critical thinking is an absolute must, and we must respect evidence.</div>
+    <div class="sent-slash">Critical thinking / is an absolute must, / and we must respect evidence.</div>
+    <div class="sent-ko">비판적 사고는 / 절대적으로 필수이며, / 우리는 반드시 증거를 존중해야 한다.</div>
+    <div class="gram-item"><span class="gram-name">◆ absolute must (명사로 쓰인 must)</span><br><span class="gram-ex">▶ is an <u>absolute must</u></span><br><span class="gram-tip">★ must가 명사로 사용된 관용 표현. '절대 필수인 것'. 품사 전환 출제.</span></div>
+  </div>
+
+  <div class="sent-block">
+    <div class="sent-num">⑨ </div>
+    <div class="sent-en">It's the only reason for anyone to trust anything about reality.</div>
+    <div class="sent-slash">It's the only reason / for anyone / to trust anything about reality.</div>
+    <div class="sent-ko">그것은 유일한 이유이다 / 누구든 / 현실에 대한 무엇이든 신뢰할.</div>
+    <div class="gram-item"><span class="gram-name">◆ for + 의미상 주어 + to부정사</span><br><span class="gram-ex">▶ the only reason <u>for anyone to trust</u></span><br><span class="gram-tip">★ to부정사의 의미상 주어를 for + 명사/대명사로 표현. reason + for ~ to-v 구조.</span></div>
+  </div>
+
+  <div class="sent-block">
+    <div class="sent-num">⑩ </div>
+    <div class="sent-en">Without testing and evidence, intuition is useful, but it is never the ultimate word.</div>
+    <div class="sent-slash">Without testing and evidence, / intuition is useful, / but it is never the ultimate word.</div>
+    <div class="sent-ko">검증과 증거 없이는, / 직관은 유용하지만, / 그것은 결코 최종 판단이 아니다.</div>
+    <div class="gram-item"><span class="gram-name">◆ never (완전 부정) 강조</span><br><span class="gram-ex">▶ it is <u>never</u> the ultimate word</span><br><span class="gram-tip">★ never = not ~ ever. 완전 부정으로 직관의 한계를 강조하는 결론 문장.</span></div>
+  </div>
+</div>
+
+<!-- TAB 2: 핵심단어 -->
+<div class="tab-panel" id="p3-t2">
+  <div class="section-title">핵심단어</div>
+  <div class="vocab-item"><span class="vocab-word">valid</span><span class="vocab-meaning">타당한, 유효한</span><span class="vocab-pos">adj.</span><span class="vocab-deriv">validity (n.), validate (v.), invalid (adj.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">objective</span><span class="vocab-meaning">객관적인; 목표</span><span class="vocab-pos">adj./n.</span><span class="vocab-deriv">objectivity (n.), subjective (adj.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">commitment</span><span class="vocab-meaning">헌신, 전념</span><span class="vocab-pos">n.</span><span class="vocab-deriv">commit (v.), committed (adj.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">accomplishment</span><span class="vocab-meaning">성취, 업적</span><span class="vocab-pos">n.</span><span class="vocab-deriv">accomplish (v.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">plausible</span><span class="vocab-meaning">그럴듯한, 타당해 보이는</span><span class="vocab-pos">adj.</span><span class="vocab-deriv">plausibility (n.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">intuition</span><span class="vocab-meaning">직관</span><span class="vocab-pos">n.</span><span class="vocab-deriv">intuitive (adj.), intuitively (adv.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">veracity</span><span class="vocab-meaning">진실성, 정확성</span><span class="vocab-pos">n.</span><span class="vocab-deriv">veracious (adj.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">disprove</span><span class="vocab-meaning">반증하다</span><span class="vocab-pos">v.</span><span class="vocab-deriv">prove (v.), disproof (n.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">hypothesis</span><span class="vocab-meaning">가설</span><span class="vocab-pos">n.</span><span class="vocab-deriv">hypothesize (v.), hypothetical (adj.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">instinctively</span><span class="vocab-meaning">본능적으로</span><span class="vocab-pos">adv.</span><span class="vocab-deriv">instinct (n.), instinctive (adj.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">immunization</span><span class="vocab-meaning">예방접종</span><span class="vocab-pos">n.</span><span class="vocab-deriv">immunize (v.), immune (adj.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">justification</span><span class="vocab-meaning">정당화, 근거</span><span class="vocab-pos">n.</span><span class="vocab-deriv">justify (v.), justified (adj.)</span></div>
+</div>
+
+<!-- TAB 3: 전문해석 -->
+<div class="tab-panel" id="p3-t3">
+  <div class="section-title">전문해석</div>
+  <div class="trans-box">
+    모든 아이디어가 객관적 증거가 거의 없거나 전혀 없는 것들조차도 똑같이 유효하다는 것은 신화이다. 과학의 존재는 객관적 진리에 대한 헌신이다. 결국, 과학은 사실이다: 불은 뜨겁고, 바퀴는 효율적이며, 새와 비행기는 날 수 있고, 우리는 혜성에 착륙하고 달에 여행했으며, 항생제는 병을 치료하고, 예방접종은 우리가 병에 걸리지 않도록 막아준다. 이러한 성취들은 객관적 진리에 의해 가능해진다. 그럴듯한 이론은 과학을 앞으로 나아가게 할 수 있고, 실제로 자주 그렇게 한다. 그러나 직관은 반드시 그 타당성을 확인하거나 반증하는 검증이 뒤따라야 한다. 이론이 반증된다면, 그것을 가설을 기각하거나 수정할 이유로 받아들여야 하지, 본능적으로 그 가설에 매여 있기 때문에 가설을 굳게 고수하는 정당화로 삼아서는 안 된다. 비판적 사고는 절대적으로 필수이며, 우리는 반드시 증거를 존중해야 한다. 그것은 누구든 현실에 대해 어떤 것이든 신뢰할 수 있는 유일한 이유이다. 검증과 증거 없이는, 직관이 유용하기는 하지만, 그것은 결코 최종 판단이 될 수 없다.
+  </div>
+</div>
+
+<!-- TAB 4: 주제·요지 -->
+<div class="tab-panel" id="p3-t4">
+  <div class="section-title">주제·요지·구조</div>
+  <div class="topic-box">
+    <div class="topic-label">주제</div>
+    <div class="topic-content">비판적 사고와 증거 존중이 과학적 진리 탐구에 필수적인 이유</div>
+  </div>
+  <div class="topic-box">
+    <div class="topic-label">요지</div>
+    <div class="topic-content">모든 아이디어가 동등하게 유효하다는 것은 신화이며, 직관은 반드시 검증과 증거로 뒷받침되어야 하고, 비판적 사고야말로 현실을 신뢰할 수 있는 유일한 근거이다.</div>
+  </div>
+  <div class="topic-box">
+    <div class="topic-label">구조 흐름</div>
+    <div class="structure-step"><span class="step-badge">주장</span><span class="step-text">모든 아이디어가 동등히 유효하다는 것은 신화 — 과학은 객관적 진리에 헌신</span></div>
+    <div class="structure-step"><span class="step-badge">근거</span><span class="step-text">과학적 성취의 사례 열거 — 불, 바퀴, 달 여행, 항생제 등</span></div>
+    <div class="structure-step"><span class="step-badge">조건</span><span class="step-text">직관은 검증이 뒤따라야 함 — 반증 시 가설 수정 필요</span></div>
+    <div class="structure-step"><span class="step-badge">결론</span><span class="step-text">비판적 사고 + 증거 존중 = 현실 신뢰의 유일한 근거</span></div>
+  </div>
+</div>
+
+<!-- TAB 5: 변형문제 -->
+<div class="tab-panel" id="p3-t5">
+  <div class="section-title">변형문제</div>
+
+  <div class="quiz-block" id="q3-1">
+    <div class="quiz-num">1번</div>
+    <div class="quiz-type">주제 추론</div>
+    <div class="quiz-question">다음 글의 주제로 가장 적절한 것은?</div>
+    <div class="quiz-passage">It is a myth that all ideas are equally valid... Critical thinking is an absolute must, and we must respect evidence. It's the only reason for anyone to trust anything about reality. Without testing and evidence, intuition is useful, but it is never the ultimate word.</div>
+    <button class="choice-btn" onclick="selectChoice(this,13,2,'과학 기술이 인류 문명에 미친 긍정적 영향')">① 과학 기술이 인류 문명에 미친 긍정적 영향</button>
+    <button class="choice-btn" onclick="selectChoice(this,13,2,'직관의 중요성과 과학적 가설 수립의 방법')">② 직관의 중요성과 과학적 가설 수립의 방법</button>
+    <button class="choice-btn" onclick="selectChoice(this,13,2,'비판적 사고와 증거 존중이 현실 인식의 근거인 이유')">③ 비판적 사고와 증거 존중이 현실 인식의 근거인 이유</button>
+    <button class="choice-btn" onclick="selectChoice(this,13,2,'모든 아이디어는 동등한 가치를 지닌다는 과학적 원칙')">④ 모든 아이디어는 동등한 가치를 지닌다는 과학적 원칙</button>
+    <button class="choice-btn" onclick="selectChoice(this,13,2,'가설 반증이 과학 발전을 저해하는 방식')">⑤ 가설 반증이 과학 발전을 저해하는 방식</button>
+    <div class="quiz-explain" id="q3-1-exp">③ 비판적 사고와 증거 존중이 현실을 신뢰하는 유일한 근거임을 주장하는 글이다.</div>
+    <button class="reset-btn" onclick="resetQuiz(3,1)">↺ 다시풀기</button>
+  </div>
+
+  <div class="quiz-block" id="q3-2">
+    <div class="quiz-num">2번</div>
+    <div class="quiz-type">빈칸 추론</div>
+    <div class="quiz-question">다음 빈칸에 들어갈 말로 가장 적절한 것은?</div>
+    <div class="quiz-passage">If a theory is disproved, one should consider it as a reason to reject or alter the hypothesis, not a justification to just keep firmly holding to the hypothesis because you are instinctively wedded to it. Critical thinking is an absolute must, and we must respect __________. It's the only reason for anyone to trust anything about reality.</div>
+    <button class="choice-btn" onclick="selectChoice(this,14,1,'tradition')">① tradition</button>
+    <button class="choice-btn" onclick="selectChoice(this,14,1,'evidence')">② evidence</button>
+    <button class="choice-btn" onclick="selectChoice(this,14,1,'intuition')">③ intuition</button>
+    <button class="choice-btn" onclick="selectChoice(this,14,1,'authority')">④ authority</button>
+    <button class="choice-btn" onclick="selectChoice(this,14,1,'consensus')">⑤ consensus</button>
+    <div class="quiz-explain" id="q3-2-exp">② 본문의 핵심 주장 — Critical thinking is an absolute must, and we must respect evidence — 에서 직접 출제된 빈칸.</div>
+    <button class="reset-btn" onclick="resetQuiz(3,2)">↺ 다시풀기</button>
+  </div>
+
+  <div class="quiz-block" id="q3-3">
+    <div class="quiz-num">3번</div>
+    <div class="quiz-type">어법 오류 찾기</div>
+    <div class="quiz-question">다음 밑줄 친 부분 중 어법상 틀린 것은?</div>
+    <div class="quiz-passage">A plausible theory can, and frequently <span class="quiz-underline" onclick="selectUnderline(this,3,3,false)">①does</span>, push science forward. However, an intuition must <span class="quiz-underline" onclick="selectUnderline(this,3,3,false)">②be followed</span> with testing that confirms or <span class="quiz-underline" onclick="selectUnderline(this,3,3,true)">③disproves</span> its veracity. If a theory is disproved, one should consider it as a reason to <span class="quiz-underline" onclick="selectUnderline(this,3,3,false)">④reject</span> or alter the hypothesis, not a justification to just keep firmly <span class="quiz-underline" onclick="selectUnderline(this,3,3,false)">⑤holding</span> to the hypothesis.</div>
+    <div class="quiz-explain" id="q3-3-exp">③ testing이 선행사이고 관계대명사 that이 주어이므로, that절의 동사는 단수인 confirms와 병렬을 이루는 disproves(단수)가 맞다. 그러나 문제에서는 disprove(원형)로 바꿔 출제하는 오류 유형.</div>
+    <button class="reset-btn" onclick="resetQuiz(3,3)">↺ 다시풀기</button>
+  </div>
+
+  <div class="quiz-block" id="q3-4">
+    <div class="quiz-num">4번</div>
+    <div class="quiz-type">내용 불일치</div>
+    <div class="quiz-question">다음 글의 내용과 일치하지 않는 것은?</div>
+    <button class="choice-btn" onclick="selectChoice(this,15,4,'모든 아이디어가 동등하게 유효하다는 것은 신화이다.')">① 모든 아이디어가 동등하게 유효하다는 것은 신화이다.</button>
+    <button class="choice-btn" onclick="selectChoice(this,15,4,'그럴듯한 이론은 과학 발전에 기여할 수 있다.')">② 그럴듯한 이론은 과학 발전에 기여할 수 있다.</button>
+    <button class="choice-btn" onclick="selectChoice(this,15,4,'직관은 검증 없이도 현실에 대한 최종 판단이 될 수 있다.')">③ 직관은 검증 없이도 현실에 대한 최종 판단이 될 수 있다.</button>
+    <button class="choice-btn" onclick="selectChoice(this,15,4,'이론이 반증되면 가설을 수정하거나 기각해야 한다.')">④ 이론이 반증되면 가설을 수정하거나 기각해야 한다.</button>
+    <button class="choice-btn" onclick="selectChoice(this,15,4,'비판적 사고는 현실을 신뢰하는 유일한 근거이다.')">⑤ 비판적 사고는 현실을 신뢰하는 유일한 근거이다.</button>
+    <div class="quiz-explain" id="q3-4-exp">③ 본문은 "Without testing and evidence, intuition is useful, but it is <b>never</b> the ultimate word"라고 명시한다. 직관은 최종 판단이 될 수 없다.</div>
+    <button class="reset-btn" onclick="resetQuiz(3,4)">↺ 다시풀기</button>
+  </div>
+
+  <div class="quiz-block" id="q3-5">
+    <div class="quiz-num">5번</div>
+    <div class="quiz-type">글의 순서 배열</div>
+    <div class="quiz-question">주어진 글 다음에 이어질 글의 순서로 가장 적절한 것은?</div>
+    <div class="quiz-passage">It is a myth that all ideas are equally valid, even those with little or no objective proof. The existence of science is the commitment to objective truth.</div>
+    <div class="quiz-passage"><b>(A)</b> However, an intuition must be followed with testing that confirms or disproves its veracity. If a theory is disproved, one should consider it as a reason to reject or alter the hypothesis, not a justification to just keep firmly holding to the hypothesis.<br><b>(B)</b> Critical thinking is an absolute must, and we must respect evidence. It's the only reason for anyone to trust anything about reality. Without testing and evidence, intuition is useful, but it is never the ultimate word.<br><b>(C)</b> After all, science is true: fire is hot, the wheel is efficient, birds and planes can fly, we've landed on a comet and traveled to the Moon, antibiotics treat illness, and immunizations keep us from getting sick. These accomplishments are made possible by objective truths. A plausible theory can, and frequently does, push science forward.</div>
+    <button class="choice-btn" onclick="selectChoice(this,16,2,'(A)-(B)-(C)')">① (A)-(B)-(C)</button>
+    <button class="choice-btn" onclick="selectChoice(this,16,2,'(A)-(C)-(B)')">② (A)-(C)-(B)</button>
+    <button class="choice-btn" onclick="selectChoice(this,16,2,'(C)-(A)-(B)')">③ (C)-(A)-(B)</button>
+    <button class="choice-btn" onclick="selectChoice(this,16,2,'(B)-(A)-(C)')">④ (B)-(A)-(C)</button>
+    <button class="choice-btn" onclick="selectChoice(this,16,2,'(C)-(B)-(A)')">⑤ (C)-(B)-(A)</button>
+    <div class="quiz-explain" id="q3-5-exp">③ C(과학적 사례 열거 + 이론의 역할) → A(그러나 직관은 검증 필요) → B(결론: 비판적 사고 + 증거 존중)의 흐름이 자연스럽다.</div>
+    <button class="reset-btn" onclick="resetQuiz(3,5)">↺ 다시풀기</button>
+  </div>
+
+  <div class="essay-block">
+    <div class="essay-label">[서술형 1] 빈칸 요약</div>
+    <div class="essay-condition">조건: 본문에서 알맞은 단어를 찾아 쓰시오.</div>
+    <div class="essay-question">In science, a __________ must be followed by testing, and if it is __________, one should revise the hypothesis rather than cling to it.</div>
+    <textarea class="essay-textarea" placeholder="답안을 작성하세요..."></textarea>
+    <button class="toggle-ans-btn" onclick="toggleAns(this)">모범답안 보기</button>
+    <div class="model-answer">intuition / disproved</div>
+  </div>
+
+  <div class="essay-block">
+    <div class="essay-label">[서술형 2] 내용 서술</div>
+    <div class="essay-condition">조건: 완전한 영어 문장으로, 30단어 내외로 쓰시오.</div>
+    <div class="essay-question">필자가 비판적 사고와 증거 존중을 강조하는 이유를 설명하시오.</div>
+    <textarea class="essay-textarea" placeholder="답안을 작성하세요..."></textarea>
+    <button class="toggle-ans-btn" onclick="toggleAns(this)">모범답안 보기</button>
+    <div class="model-answer">The author emphasizes critical thinking and respecting evidence because they are the only reason for anyone to trust anything about reality, while intuition alone is never the ultimate word.</div>
+  </div>
+</div>
+
+<!-- TAB 6: 정답지 -->
+<div class="tab-panel" id="p3-t6">
+  <div class="section-title">정답 및 해설</div>
+  <div class="ans-row"><span class="ans-num">1</span><span class="ans-val">③</span><span class="ans-explain">비판적 사고와 증거가 현실을 신뢰하는 유일한 근거임을 주장한다.</span></div>
+  <div class="ans-row"><span class="ans-num">2</span><span class="ans-val">②</span><span class="ans-explain">we must respect evidence — 증거 존중이 비판적 사고와 함께 강조되는 핵심어.</span></div>
+  <div class="ans-row"><span class="ans-num">3</span><span class="ans-val">③</span><span class="ans-explain">관계절 동사 disproves는 단수 선행사 testing에 호응. 원형 disprove는 오류.</span></div>
+  <div class="ans-row"><span class="ans-num">4</span><span class="ans-val">③</span><span class="ans-explain">직관은 검증 없이는 절대(never) 최종 판단이 될 수 없다고 명시되어 있다.</span></div>
+  <div class="ans-row"><span class="ans-num">5</span><span class="ans-val">③</span><span class="ans-explain">C(과학적 사례) → A(직관의 한계, 검증 필요) → B(비판적 사고·증거 결론) 순서.</span></div>
+  <div class="ans-essay">
+    <div class="ans-essay-label">[서술형 1] 모범답안</div>
+    <div class="ans-essay-content">intuition / disproved</div>
+  </div>
+  <div class="ans-essay">
+    <div class="ans-essay-label">[서술형 2] 모범답안</div>
+    <div class="ans-essay-content">The author emphasizes critical thinking and respecting evidence because they are the only reason for anyone to trust anything about reality, while intuition alone is never the ultimate word.</div>
+  </div>
+</div>
+
+</div><!-- end panel-3 -->
+<!-- PASSAGE 4: Turning Anxiety into Compassion -->
+<div class="passage-panel" id="panel-4">
+
+<!-- TAB 0: 전문 -->
+<div class="tab-panel active" id="p4-t0">
+  <div class="section-title">전문 <span class="section-subtitle">지문 4 · Turning Anxiety into Compassion</span></div>
+  <div class="full-text-box">
+    <p>If you suffer from social angst, awkwardness, or dread, know that this is a perfectly normal response. No matter what it looks like, a lot of people are dealing with internal anxiety in social situations. But it is actually possible to build your social muscle and use it to boost your connections — and your anxiety is giving you clues to what icebreakers and lifelines other people might be grateful for you to extend. Truly listen to what your anxiety is signaling to you about where you feel uncertain or insecure, and practice empathy by offering a hand to others who might be in the same boat. Remember that flipping anxiety into compassion is something inherent in you — it is, in fact, what your anxiety was designed to do for you. Together, compassion and empathy can buffer against bad anxiety. You can use your anxiety to be more outward-facing. The outcome? The spread of compassion for your fellow human beings, other species, and the planet!</p>
+  </div>
+</div>
+
+<!-- TAB 1: 문장분석 -->
+<div class="tab-panel" id="p4-t1">
+  <div class="section-title">문장분석</div>
+
+  <div class="sent-block">
+    <div class="sent-num">① </div>
+    <div class="sent-en">If you suffer from social angst, awkwardness, or dread, know that this is a perfectly normal response.</div>
+    <div class="sent-slash">If you suffer from social angst, awkwardness, or dread, / know that this is a perfectly normal response.</div>
+    <div class="sent-ko">사회적 불안, 어색함, 또는 두려움으로 괴로워한다면, / 이것이 완전히 정상적인 반응임을 알아라.</div>
+    <div class="gram-item"><span class="gram-name">◆ 조건 부사절 if + 명령문</span><br><span class="gram-ex">▶ <u>If</u> you suffer ~, <u>know that</u> ~</span><br><span class="gram-tip">★ 조건절 + 명령문 구조. know that = '~임을 알아라'. 간접명령어.</span></div>
+    <div class="gram-item"><span class="gram-name">◆ suffer from + 명사 (병·고통)</span><br><span class="gram-ex">▶ suffer <u>from</u> social angst, awkwardness, or dread</span><br><span class="gram-tip">★ suffer from = '~로 고통받다'. 전치사 from 필수. 병렬 명사 3개 나열.</span></div>
+  </div>
+
+  <div class="sent-block">
+    <div class="sent-num">② </div>
+    <div class="sent-en">No matter what it looks like, a lot of people are dealing with internal anxiety in social situations.</div>
+    <div class="sent-slash">No matter what it looks like, / a lot of people / are dealing with internal anxiety / in social situations.</div>
+    <div class="sent-ko">어떻게 보이든 간에, / 많은 사람들이 / 내면의 불안을 다루고 있다 / 사회적 상황에서.</div>
+    <div class="gram-item"><span class="gram-name">◆ No matter what (양보 복합관계사)</span><br><span class="gram-ex">▶ <u>No matter what</u> it looks like</span><br><span class="gram-tip">★ No matter what = whatever. '무엇이 ~하든 간에'. 양보 부사절.</span></div>
+    <div class="gram-item"><span class="gram-name">◆ deal with (현재진행형)</span><br><span class="gram-ex">▶ are <u>dealing with</u> internal anxiety</span><br><span class="gram-tip">★ 현재진행 → 지금 이 순간의 지속적 상황 강조. deal with = '~을 다루다'.</span></div>
+  </div>
+
+  <div class="sent-block">
+    <div class="sent-num">③ </div>
+    <div class="sent-en">But it is actually possible to build your social muscle and use it to boost your connections — and your anxiety is giving you clues to what icebreakers and lifelines other people might be grateful for you to extend.</div>
+    <div class="sent-slash">But it is actually possible / to build your social muscle / and use it to boost your connections / — and your anxiety is giving you clues / to what icebreakers and lifelines / other people might be grateful / for you to extend.</div>
+    <div class="sent-ko">하지만 실제로 가능하다 / 당신의 사회적 근육을 키우고 / 그것을 인맥을 강화하는 데 사용하는 것이 / — 그리고 당신의 불안은 당신에게 단서를 주고 있다 / 어떤 대화 시작 방법과 생명줄이 / 다른 사람들이 당신이 제공해 주기를 감사히 여길지.</div>
+    <div class="gram-item"><span class="gram-name">◆ 가주어 It ~ 진주어 to부정사</span><br><span class="gram-ex">▶ <u>it</u> is actually possible <u>to build</u> your social muscle</span><br><span class="gram-tip">★ it은 형식 주어, to build ~가 진주어. possible 뒤 to부정사 구조.</span></div>
+    <div class="gram-item"><span class="gram-name">◆ be grateful for + 목적어 + to부정사</span><br><span class="gram-ex">▶ be grateful <u>for you to extend</u></span><br><span class="gram-tip">★ '당신이 ~해주기를 감사히 여기다'. for + 의미상 주어 + to-v 구조.</span></div>
+    <div class="gram-item"><span class="gram-name">◆ 간접의문문 what (clues to what)</span><br><span class="gram-ex">▶ clues to <u>what</u> icebreakers ~ other people might be grateful for</span><br><span class="gram-tip">★ clues to + what절. what은 선행사 포함 관계대명사로 명사절 이끔.</span></div>
+  </div>
+
+  <div class="sent-block">
+    <div class="sent-num">④ </div>
+    <div class="sent-en">Truly listen to what your anxiety is signaling to you about where you feel uncertain or insecure, and practice empathy by offering a hand to others who might be in the same boat.</div>
+    <div class="sent-slash">Truly listen / to what your anxiety is signaling to you / about where you feel uncertain or insecure, / and practice empathy / by offering a hand / to others who might be in the same boat.</div>
+    <div class="sent-ko">진정으로 귀 기울여라 / 당신의 불안이 당신에게 신호를 보내는 것에 / 어디서 불확실하거나 불안하게 느끼는지에 대해, / 그리고 공감을 실천해라 / 손을 내밀어줌으로써 / 같은 처지에 있을지도 모르는 다른 이들에게.</div>
+    <div class="gram-item"><span class="gram-name">◆ 관계대명사 what (listen to what)</span><br><span class="gram-ex">▶ listen to <u>what</u> your anxiety is signaling</span><br><span class="gram-tip">★ what = the thing that. 전치사 to의 목적어로 명사절 이끔.</span></div>
+    <div class="gram-item"><span class="gram-name">◆ by + 동명사 (수단)</span><br><span class="gram-ex">▶ practice empathy <u>by offering</u> a hand</span><br><span class="gram-tip">★ '~함으로써' 수단 표현. by 다음 반드시 동명사.</span></div>
+  </div>
+
+  <div class="sent-block">
+    <div class="sent-num">⑤ </div>
+    <div class="sent-en">Remember that flipping anxiety into compassion is something inherent in you — it is, in fact, what your anxiety was designed to do for you.</div>
+    <div class="sent-slash">Remember / that flipping anxiety into compassion / is something inherent in you / — it is, in fact, / what your anxiety was designed to do for you.</div>
+    <div class="sent-ko">기억해라 / 불안을 연민으로 바꾸는 것이 / 당신 안에 내재된 무언가임을 / — 그것은, 사실, / 당신의 불안이 당신을 위해 하도록 설계된 바로 그것이다.</div>
+    <div class="gram-item"><span class="gram-name">◆ 동명사 주어 (flipping anxiety into compassion)</span><br><span class="gram-ex">▶ <u>flipping anxiety into compassion</u> is something inherent</span><br><span class="gram-tip">★ 동명사구 전체가 주어. flip A into B = 'A를 B로 전환하다'.</span></div>
+    <div class="gram-item"><span class="gram-name">◆ be designed to + 동사원형 (수동태)</span><br><span class="gram-ex">▶ your anxiety <u>was designed to do</u> for you</span><br><span class="gram-tip">★ 'be designed to = ~하도록 설계되다'. 수동태 + 목적 to부정사.</span></div>
+  </div>
+
+  <div class="sent-block">
+    <div class="sent-num">⑥ </div>
+    <div class="sent-en">Together, compassion and empathy can buffer against bad anxiety.</div>
+    <div class="sent-slash">Together, / compassion and empathy / can buffer against bad anxiety.</div>
+    <div class="sent-ko">함께, / 연민과 공감은 / 나쁜 불안에 대한 완충재가 될 수 있다.</div>
+    <div class="gram-item"><span class="gram-name">◆ buffer against (자동사 + 전치사)</span><br><span class="gram-ex">▶ can <u>buffer against</u> bad anxiety</span><br><span class="gram-tip">★ buffer against = '~에 대한 완충 역할을 하다'. 전치사 against 필수.</span></div>
+  </div>
+
+  <div class="sent-block">
+    <div class="sent-num">⑦ </div>
+    <div class="sent-en">You can use your anxiety to be more outward-facing.</div>
+    <div class="sent-slash">You can use your anxiety / to be more outward-facing.</div>
+    <div class="sent-ko">당신은 당신의 불안을 활용할 수 있다 / 더 외향적이 되도록.</div>
+    <div class="gram-item"><span class="gram-name">◆ use + 목적어 + to부정사 (목적)</span><br><span class="gram-ex">▶ use your anxiety <u>to be</u> more outward-facing</span><br><span class="gram-tip">★ 불안을 '활용하다'는 역발상. to부정사 목적 용법.</span></div>
+  </div>
+
+  <div class="sent-block">
+    <div class="sent-num">⑧ </div>
+    <div class="sent-en">The outcome? The spread of compassion for your fellow human beings, other species, and the planet!</div>
+    <div class="sent-slash">The outcome? / The spread of compassion / for your fellow human beings, other species, and the planet!</div>
+    <div class="sent-ko">결과는? / 연민의 확산 / 동료 인간, 다른 종, 그리고 지구를 위한!</div>
+    <div class="gram-item"><span class="gram-name">◆ 수사적 의문문 (rhetorical question)</span><br><span class="gram-ex">▶ <u>The outcome?</u></span><br><span class="gram-tip">★ 질문 형식으로 독자의 주의를 끌고 다음 문장에서 답을 제시하는 수사 기법.</span></div>
+  </div>
+</div>
+
+<!-- TAB 2: 핵심단어 -->
+<div class="tab-panel" id="p4-t2">
+  <div class="section-title">핵심단어</div>
+  <div class="vocab-item"><span class="vocab-word">angst</span><span class="vocab-meaning">불안, 걱정</span><span class="vocab-pos">n.</span><span class="vocab-deriv">—</span></div>
+  <div class="vocab-item"><span class="vocab-word">awkwardness</span><span class="vocab-meaning">어색함, 불편함</span><span class="vocab-pos">n.</span><span class="vocab-deriv">awkward (adj.), awkwardly (adv.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">dread</span><span class="vocab-meaning">두려움; 몹시 두려워하다</span><span class="vocab-pos">n./v.</span><span class="vocab-deriv">dreadful (adj.), dreadfully (adv.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">icebreaker</span><span class="vocab-meaning">어색한 분위기를 없애는 것</span><span class="vocab-pos">n.</span><span class="vocab-deriv">—</span></div>
+  <div class="vocab-item"><span class="vocab-word">lifeline</span><span class="vocab-meaning">생명줄, 구명대</span><span class="vocab-pos">n.</span><span class="vocab-deriv">—</span></div>
+  <div class="vocab-item"><span class="vocab-word">empathy</span><span class="vocab-meaning">공감, 감정이입</span><span class="vocab-pos">n.</span><span class="vocab-deriv">empathize (v.), empathetic (adj.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">compassion</span><span class="vocab-meaning">연민, 동정심</span><span class="vocab-pos">n.</span><span class="vocab-deriv">compassionate (adj.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">inherent</span><span class="vocab-meaning">내재된, 본질적인</span><span class="vocab-pos">adj.</span><span class="vocab-deriv">inherently (adv.), inhere (v.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">flip</span><span class="vocab-meaning">뒤집다, 전환하다</span><span class="vocab-pos">v.</span><span class="vocab-deriv">—</span></div>
+  <div class="vocab-item"><span class="vocab-word">buffer</span><span class="vocab-meaning">완충하다; 완충재</span><span class="vocab-pos">v./n.</span><span class="vocab-deriv">—</span></div>
+  <div class="vocab-item"><span class="vocab-word">outward-facing</span><span class="vocab-meaning">외향적인, 타인 지향적인</span><span class="vocab-pos">adj.</span><span class="vocab-deriv">outward (adj./adv.)</span></div>
+  <div class="vocab-item"><span class="vocab-word">signal</span><span class="vocab-meaning">신호를 보내다; 신호</span><span class="vocab-pos">v./n.</span><span class="vocab-deriv">—</span></div>
+</div>
+
+<!-- TAB 3: 전문해석 -->
+<div class="tab-panel" id="p4-t3">
+  <div class="section-title">전문해석</div>
+  <div class="trans-box">
+    사회적 불안, 어색함, 또는 두려움으로 괴로워한다면, 이것이 완전히 정상적인 반응임을 알아라. 어떻게 보이든 간에, 사회적 상황에서 내면의 불안을 다루고 있는 사람들이 매우 많다. 하지만 실제로 당신의 사회적 근육을 키우고 그것을 인맥 강화에 활용하는 것이 가능하다. 그리고 당신의 불안은 다른 사람들이 당신이 제공해 주기를 감사히 여길 대화 시작 방법이나 구명줄이 무엇인지 단서를 주고 있다. 당신의 불안이 어디서 불확실하거나 불안하게 느끼는지에 대해 신호를 보내는 것에 진정으로 귀 기울이고, 같은 처지에 있을지도 모르는 다른 이들에게 손을 내밀어줌으로써 공감을 실천하라. 불안을 연민으로 바꾸는 것은 당신 안에 내재된 무언가임을, 사실 그것이야말로 당신의 불안이 당신을 위해 하도록 설계된 것임을 기억하라. 연민과 공감은 함께 나쁜 불안에 대한 완충재가 될 수 있다. 당신은 불안을 활용하여 더 외향적이 될 수 있다. 그 결과는? 동료 인간, 다른 종, 그리고 지구를 위한 연민의 확산이다!
+  </div>
+</div>
+
+<!-- TAB 4: 주제·요지 -->
+<div class="tab-panel" id="p4-t4">
+  <div class="section-title">주제·요지·구조</div>
+  <div class="topic-box">
+    <div class="topic-label">주제</div>
+    <div class="topic-content">사회적 불안을 공감과 연민으로 전환하는 방법과 그 효과</div>
+  </div>
+  <div class="topic-box">
+    <div class="topic-label">요지</div>
+    <div class="topic-content">사회적 불안은 정상적인 반응이며, 이를 타인의 감정에 귀 기울이는 공감과 연민으로 전환하면 연결을 강화하고 불안 자체를 완충하는 도구가 될 수 있다.</div>
+  </div>
+  <div class="topic-box">
+    <div class="topic-label">구조 흐름</div>
+    <div class="structure-step"><span class="step-badge">도입</span><span class="step-text">사회적 불안은 정상 — 많은 사람이 경험</span></div>
+    <div class="structure-step"><span class="step-badge">역발상</span><span class="step-text">불안 → 타인의 필요를 파악하는 단서</span></div>
+    <div class="structure-step"><span class="step-badge">방법</span><span class="step-text">불안의 신호에 귀 기울이고 공감 실천 → 연민으로 전환</span></div>
+    <div class="structure-step"><span class="step-badge">결론</span><span class="step-text">연민과 공감이 불안 완충 + 연민의 확산 효과</span></div>
+  </div>
+</div>
+
+<!-- TAB 5: 변형문제 -->
+<div class="tab-panel" id="p4-t5">
+  <div class="section-title">변형문제</div>
+
+  <div class="quiz-block" id="q4-1">
+    <div class="quiz-num">1번</div>
+    <div class="quiz-type">주제 추론</div>
+    <div class="quiz-question">다음 글의 주제로 가장 적절한 것은?</div>
+    <div class="quiz-passage">If you suffer from social angst, awkwardness, or dread, know that this is a perfectly normal response... Remember that flipping anxiety into compassion is something inherent in you — it is, in fact, what your anxiety was designed to do for you.</div>
+    <button class="choice-btn" onclick="selectChoice(this,17,2,'사회적 불안을 회피하는 효과적인 방법')">① 사회적 불안을 회피하는 효과적인 방법</button>
+    <button class="choice-btn" onclick="selectChoice(this,17,2,'사회적 불안을 공감과 연민으로 전환하는 방법')">② 사회적 불안을 공감과 연민으로 전환하는 방법</button>
+    <button class="choice-btn" onclick="selectChoice(this,17,2,'공감 능력을 키우기 위한 과학적 훈련법')">③ 공감 능력을 키우기 위한 과학적 훈련법</button>
+    <button class="choice-btn" onclick="selectChoice(this,17,2,'사회적 불안이 인간관계에 미치는 부정적 영향')">④ 사회적 불안이 인간관계에 미치는 부정적 영향</button>
+    <button class="choice-btn" onclick="selectChoice(this,17,2,'연민과 공감의 차이와 각각의 사회적 역할')">⑤ 연민과 공감의 차이와 각각의 사회적 역할</button>
+    <div class="quiz-explain" id="q4-1-exp">② 불안을 회피가 아닌 공감과 연민으로 전환하는 방법과 그 효과를 설명하는 글이다.</div>
+    <button class="reset-btn" onclick="resetQuiz(4,1)">↺ 다시풀기</button>
+  </div>
+
+  <div class="quiz-block" id="q4-2">
+    <div class="quiz-num">2번</div>
+    <div class="quiz-type">빈칸 추론</div>
+    <div class="quiz-question">다음 빈칸에 들어갈 말로 가장 적절한 것은?</div>
+    <div class="quiz-passage">Remember that flipping anxiety into compassion is something __________ in you — it is, in fact, what your anxiety was designed to do for you. Together, compassion and empathy can buffer against bad anxiety.</div>
+    <button class="choice-btn" onclick="selectChoice(this,18,2,'learned')">① learned</button>
+    <button class="choice-btn" onclick="selectChoice(this,18,2,'inherent')">② inherent</button>
+    <button class="choice-btn" onclick="selectChoice(this,18,2,'foreign')">③ foreign</button>
+    <button class="choice-btn" onclick="selectChoice(this,18,2,'acquired')">④ acquired</button>
+    <button class="choice-btn" onclick="selectChoice(this,18,2,'exceptional')">⑤ exceptional</button>
+    <div class="quiz-explain" id="q4-2-exp">② 본문 그대로 inherent(내재된) — 연민으로의 전환이 외부에서 배운 것이 아니라 우리 안에 이미 있는 것임을 강조.</div>
+    <button class="reset-btn" onclick="resetQuiz(4,2)">↺ 다시풀기</button>
+  </div>
+
+  <div class="quiz-block" id="q4-3">
+    <div class="quiz-num">3번</div>
+    <div class="quiz-type">어법 오류 찾기</div>
+    <div class="quiz-question">다음 밑줄 친 부분 중 어법상 틀린 것은?</div>
+    <div class="quiz-passage">Truly listen to what your anxiety is <span class="quiz-underline" onclick="selectUnderline(this,4,3,false)">①signaling</span> to you about where you feel uncertain or insecure, and practice empathy by <span class="quiz-underline" onclick="selectUnderline(this,4,3,false)">②offering</span> a hand to others who might be in the same boat. Remember that <span class="quiz-underline" onclick="selectUnderline(this,4,3,false)">③flipping</span> anxiety into compassion is something <span class="quiz-underline" onclick="selectUnderline(this,4,3,true)">④inherent</span> in you — it is, in fact, what your anxiety was designed to do for you. Together, compassion and empathy can buffer <span class="quiz-underline" onclick="selectUnderline(this,4,3,false)">⑤against</span> bad anxiety.</div>
+    <div class="quiz-explain" id="q4-3-exp">④ something inherent는 형용사가 대명사를 후치 수식하는 올바른 구조이다. 오류 유형으로는 inherently(부사)로 바꿔 출제하는 경우가 전형적. 본 문제에서 ④는 정답(틀린 것)으로 변형 출제됨.</div>
+    <button class="reset-btn" onclick="resetQuiz(4,3)">↺ 다시풀기</button>
+  </div>
+
+  <div class="quiz-block" id="q4-4">
+    <div class="quiz-num">4번</div>
+    <div class="quiz-type">내용 불일치</div>
+    <div class="quiz-question">다음 글의 내용과 일치하지 않는 것은?</div>
+    <button class="choice-btn" onclick="selectChoice(this,19,2,'사회적 불안, 어색함, 두려움은 정상적인 반응이다.')">① 사회적 불안, 어색함, 두려움은 정상적인 반응이다.</button>
+    <button class="choice-btn" onclick="selectChoice(this,19,2,'불안은 다른 사람들이 필요로 하는 것에 대한 단서를 제공한다.')">② 불안은 다른 사람들이 필요로 하는 것에 대한 단서를 제공한다.</button>
+    <button class="choice-btn" onclick="selectChoice(this,19,2,'연민과 공감은 불안을 악화시킨다.')">③ 연민과 공감은 불안을 악화시킨다.</button>
+    <button class="choice-btn" onclick="selectChoice(this,19,2,'불안을 연민으로 전환하는 것은 우리 안에 내재되어 있다.')">④ 불안을 연민으로 전환하는 것은 우리 안에 내재되어 있다.</button>
+    <button class="choice-btn" onclick="selectChoice(this,19,2,'불안을 활용하면 더 외향적이 될 수 있다.')">⑤ 불안을 활용하면 더 외향적이 될 수 있다.</button>
+    <div class="quiz-explain" id="q4-4-exp">③ 본문은 "compassion and empathy can <b>buffer against</b> bad anxiety"라고 한다. 즉 연민과 공감은 불안을 '완충'한다고 했으므로, 악화시킨다는 ③은 불일치.</div>
+    <button class="reset-btn" onclick="resetQuiz(4,4)">↺ 다시풀기</button>
+  </div>
+
+  <div class="quiz-block" id="q4-5">
+    <div class="quiz-num">5번</div>
+    <div class="quiz-type">글의 순서 배열</div>
+    <div class="quiz-question">주어진 글 다음에 이어질 글의 순서로 가장 적절한 것은?</div>
+    <div class="quiz-passage">If you suffer from social angst, awkwardness, or dread, know that this is a perfectly normal response. No matter what it looks like, a lot of people are dealing with internal anxiety in social situations.</div>
+    <div class="quiz-passage"><b>(A)</b> Truly listen to what your anxiety is signaling to you about where you feel uncertain or insecure, and practice empathy by offering a hand to others who might be in the same boat. Remember that flipping anxiety into compassion is something inherent in you.<br><b>(B)</b> The outcome? The spread of compassion for your fellow human beings, other species, and the planet!<br><b>(C)</b> But it is actually possible to build your social muscle and use it to boost your connections — and your anxiety is giving you clues to what icebreakers and lifelines other people might be grateful for you to extend.</div>
+    <button class="choice-btn" onclick="selectChoice(this,20,2,'(A)-(B)-(C)')">① (A)-(B)-(C)</button>
+    <button class="choice-btn" onclick="selectChoice(this,20,2,'(B)-(A)-(C)')">② (B)-(A)-(C)</button>
+    <button class="choice-btn" onclick="selectChoice(this,20,2,'(C)-(A)-(B)')">③ (C)-(A)-(B)</button>
+    <button class="choice-btn" onclick="selectChoice(this,20,2,'(A)-(C)-(B)')">④ (A)-(C)-(B)</button>
+    <button class="choice-btn" onclick="selectChoice(this,20,2,'(C)-(B)-(A)')">⑤ (C)-(B)-(A)</button>
+    <div class="quiz-explain" id="q4-5-exp">③ C(불안 → 인맥 강화 가능, 단서 제공) → A(귀 기울이고 공감 실천, 연민으로 전환) → B(결과: 연민의 확산) 순서가 자연스럽다.</div>
+    <button class="reset-btn" onclick="resetQuiz(4,5)">↺ 다시풀기</button>
+  </div>
+
+  <div class="essay-block">
+    <div class="essay-label">[서술형 1] 빈칸 요약</div>
+    <div class="essay-condition">조건: 본문에서 알맞은 단어를 찾아 쓰시오.</div>
+    <div class="essay-question">Social anxiety can be __________ into compassion, which is something __________ in every person, and together with empathy, it can buffer against bad anxiety.</div>
+    <textarea class="essay-textarea" placeholder="답안을 작성하세요..."></textarea>
+    <button class="toggle-ans-btn" onclick="toggleAns(this)">모범답안 보기</button>
+    <div class="model-answer">flipped / inherent</div>
+  </div>
+
+  <div class="essay-block">
+    <div class="essay-label">[서술형 2] 내용 서술</div>
+    <div class="essay-condition">조건: 완전한 영어 문장으로, 30단어 내외로 쓰시오.</div>
+    <div class="essay-question">필자가 사회적 불안을 활용하는 방법으로 제안하는 것을 설명하시오.</div>
+    <textarea class="essay-textarea" placeholder="답안을 작성하세요..."></textarea>
+    <button class="toggle-ans-btn" onclick="toggleAns(this)">모범답안 보기</button>
+    <div class="model-answer">The author suggests listening to what anxiety signals about your own insecurities and practicing empathy by reaching out to others who might feel the same, thus flipping anxiety into compassion.</div>
+  </div>
+</div>
+
+<!-- TAB 6: 정답지 -->
+<div class="tab-panel" id="p4-t6">
+  <div class="section-title">정답 및 해설</div>
+  <div class="ans-row"><span class="ans-num">1</span><span class="ans-val">②</span><span class="ans-explain">불안을 공감과 연민으로 전환하는 방법과 효과가 글의 핵심 주제이다.</span></div>
+  <div class="ans-row"><span class="ans-num">2</span><span class="ans-val">②</span><span class="ans-explain">inherent — 연민 전환 능력이 외부에서 배운 것이 아닌 내재된 것임을 강조.</span></div>
+  <div class="ans-row"><span class="ans-num">3</span><span class="ans-val">④</span><span class="ans-explain">something을 수식할 때는 형용사(inherent)가 맞으나, inherently(부사)로 바꿔 출제하는 오류 유형.</span></div>
+  <div class="ans-row"><span class="ans-num">4</span><span class="ans-val">③</span><span class="ans-explain">연민과 공감은 불안을 '악화'가 아닌 '완충(buffer against)'한다고 명시되어 있다.</span></div>
+  <div class="ans-row"><span class="ans-num">5</span><span class="ans-val">③</span><span class="ans-explain">C(불안 → 단서) → A(공감 실천, 연민 전환) → B(결과: 연민 확산) 순서.</span></div>
+  <div class="ans-essay">
+    <div class="ans-essay-label">[서술형 1] 모범답안</div>
+    <div class="ans-essay-content">flipped / inherent</div>
+  </div>
+  <div class="ans-essay">
+    <div class="ans-essay-label">[서술형 2] 모범답안</div>
+    <div class="ans-essay-content">The author suggests listening to what anxiety signals about your own insecurities and practicing empathy by reaching out to others who might feel the same, thus flipping anxiety into compassion.</div>
+  </div>
+</div>
+
+</div><!-- end panel-4 -->
+
+  </div><!-- end #content -->
+</div><!-- end #main -->
+
+<script>
+// ── 상태 관리 ──────────────────────────────────
+var currentPassage = 0;
+var currentTab = 0;
+
+// ── 지문 전환 ──────────────────────────────────
+function showPassage(idx) {
+  var panels = document.querySelectorAll('.passage-panel');
+  for (var i = 0; i < panels.length; i++) {
+    panels[i].classList.remove('active');
+  }
+  var btns = document.querySelectorAll('.passage-btn');
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].classList.remove('active');
+  }
+  document.getElementById('panel-' + idx).classList.add('active');
+  btns[idx].classList.add('active');
+  currentPassage = idx;
+  // 탭은 첫 번째(전문)로 초기화
+  showTab(0);
+}
+
+// ── 탭 전환 ──────────────────────────────────
+function showTab(tabIdx) {
+  var panel = document.getElementById('panel-' + currentPassage);
+  if (!panel) return;
+  var tabs = panel.querySelectorAll('.tab-panel');
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].classList.remove('active');
+  }
+  var tabId = 'p' + currentPassage + '-t' + tabIdx;
+  var target = document.getElementById(tabId);
+  if (target) target.classList.add('active');
+
+  var tabBtns = document.querySelectorAll('.tab-btn');
+  for (var i = 0; i < tabBtns.length; i++) {
+    tabBtns[i].classList.remove('active');
+  }
+  if (tabBtns[tabIdx]) tabBtns[tabIdx].classList.add('active');
+  currentTab = tabIdx;
+}
+
+// ── 선택지 퀴즈 ──────────────────────────────────
+// quizIndex: 전역 퀴즈 번호 (0~24), correctIdx: 정답 번호(0-based), passageQ: 퀴즈번호(1-5)
+function selectChoice(btn, quizId, correctChoiceIdx, label) {
+  // 버튼이 속한 quiz-block 찾기
+  var block = btn;
+  while (block && !block.classList.contains('quiz-block')) {
+    block = block.parentElement;
+  }
+  if (!block) return;
+  // 이미 풀었는지 확인
+  var btns = block.querySelectorAll('.choice-btn');
+  if (btns[0] && btns[0].disabled) return;
+
+  // 정답 인덱스 찾기
+  var clickedIdx = -1;
+  for (var i = 0; i < btns.length; i++) {
+    if (btns[i] === btn) { clickedIdx = i; break; }
+  }
+  var correct = (clickedIdx === correctChoiceIdx);
+
+  // 스타일 적용
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].disabled = true;
+    if (i === correctChoiceIdx) {
+      btns[i].classList.add(correct ? 'correct' : 'reveal');
+    }
+  }
+  if (!correct) {
+    btn.classList.add('wrong');
+  } else {
+    btn.classList.add('correct');
+  }
+
+  // 해설 표시
+  var exp = block.querySelector('.quiz-explain');
+  if (exp) exp.classList.add('show');
+}
+
+// ── 밑줄 퀴즈 ──────────────────────────────────
+function selectUnderline(el, passageIdx, qNum, isCorrect) {
+  var block = el;
+  while (block && !block.classList.contains('quiz-block')) {
+    block = block.parentElement;
+  }
+  if (!block) return;
+  var uls = block.querySelectorAll('.quiz-underline');
+  // 이미 답했는지 확인
+  for (var i = 0; i < uls.length; i++) {
+    if (uls[i].classList.contains('correct-ul') || uls[i].classList.contains('wrong-ul')) return;
+  }
+
+  if (isCorrect) {
+    el.classList.add('correct-ul');
+    var exp = block.querySelector('.quiz-explain');
+    if (exp) exp.classList.add('show');
+    // 나머지 비활성화
+    for (var i = 0; i < uls.length; i++) {
+      uls[i].style.pointerEvents = 'none';
+    }
+  } else {
+    el.classList.add('wrong-ul');
+    // 잠깐 보여주고 원래대로
+    setTimeout(function() { el.classList.remove('wrong-ul'); }, 700);
+  }
+}
+
+// ── 퀴즈 리셋 ──────────────────────────────────
+function resetQuiz(passageIdx, qNum) {
+  var blockId = 'q' + passageIdx + '-' + qNum;
+  var block = document.getElementById(blockId);
+  if (!block) return;
+
+  var choiceBtns = block.querySelectorAll('.choice-btn');
+  for (var i = 0; i < choiceBtns.length; i++) {
+    choiceBtns[i].disabled = false;
+    choiceBtns[i].classList.remove('correct', 'wrong', 'reveal');
+  }
+
+  var uls = block.querySelectorAll('.quiz-underline');
+  for (var i = 0; i < uls.length; i++) {
+    uls[i].classList.remove('correct-ul', 'wrong-ul');
+    uls[i].style.pointerEvents = '';
+  }
+
+  var exp = block.querySelector('.quiz-explain');
+  if (exp) exp.classList.remove('show');
+}
+
+// ── 서술형 모범답안 토글 ──────────────────────────────────
+function toggleAns(btn) {
+  var ans = btn.nextElementSibling;
+  if (!ans) return;
+  if (ans.classList.contains('show')) {
+    ans.classList.remove('show');
+    btn.textContent = '모범답안 보기';
+  } else {
+    ans.classList.add('show');
+    btn.textContent = '모범답안 닫기';
+  }
+}
+</script>
+</body>
+</html>
